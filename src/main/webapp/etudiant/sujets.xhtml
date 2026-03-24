@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>PFE Manager – Sujets disponibles</title>
+    <h:outputStylesheet name="css/style.css"/>
+    <h:outputStylesheet name="css/dashboard.css"/>
+    <h:outputStylesheet name="css/sujets.css"/>
+</h:head>
+<h:body>
+    <div class="app-layout">
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+            <ui:param name="rolePrefix" value="etudiant"/>
+            <ui:param name="currentPage" value="sujets"/>
+        </ui:include>
+
+        <main class="main-content">
+
+            <!-- Header -->
+            <div style="margin-bottom:20px;">
+                <h1 class="page-title">Sujets disponibles</h1>
+                <p class="page-subtitle">Consultez les sujets proposés par les encadrants</p>
+            </div>
+
+            <!-- Barre de recherche -->
+            <h:form style="display:flex; gap:10px; margin-bottom:24px; align-items:center;">
+                <h:inputText value="#{sujetBean.motCle}"
+                             style="flex:1; padding:10px 16px; border:1.5px solid #e2e8f0;
+                                border-radius:8px; font-size:14px; outline:none;"
+                             placeholder="Rechercher par titre ou technologie..."/>
+                <h:commandButton value="🔍 Rechercher"
+                                 action="#{sujetBean.rechercher}"
+                                 styleClass="btn-primary"/>
+                <h:commandButton value="✕"
+                                 action="#{sujetBean.reinitialiserRecherche}"
+                                 styleClass="btn-outline"/>
+            </h:form>
+
+            <h:messages styleClass="alert alert-success"
+                        infoClass="alert alert-success"
+                        errorClass="alert alert-error"
+                        globalOnly="true"/>
+
+            <!-- Grille sujets -->
+            <div class="sujets-grid">
+                <ui:repeat value="#{sujetBean.sujets}" var="s">
+                    <div class="sujet-card">
+                        <div class="sujet-card-header">
+                            <h3 class="sujet-titre">#{s.titre}</h3>
+                            <span class="statut-badge statut-#{s.statut.name().toLowerCase()}">
+                            #{s.statut}
+                        </span>
+                        </div>
+                        <p class="sujet-desc">#{s.description}</p>
+                        <div class="sujet-meta">
+                            <span>👤 #{s.encadrant.nom}</span>
+                            <span>🛠 #{s.technologiesRequises}</span>
+                            <span>👥 #{s.nombreMaxEtudiants} étudiant(s)</span>
+                        </div>
+                        <div class="sujet-actions">
+                            <a href="#{request.contextPath}/etudiant/sujet-detail.xhtml?id=#{s.id}"
+                               class="btn-outline">👁 Voir détails</a>
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+
+            <h:panelGroup rendered="#{empty sujetBean.sujets}">
+                <div class="empty-state">
+                    <p>📭 Aucun sujet disponible pour le moment.</p>
+                </div>
+            </h:panelGroup>
+
+        </main>
+    </div>
+</h:body>
+</html>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>PFE Manager – Détail Sujet</title>
+    <h:outputStylesheet name="css/style.css"/>
+    <h:outputStylesheet name="css/dashboard.css"/>
+    <h:outputStylesheet name="css/sujets.css"/>
+</h:head>
+<h:body>
+    <div class="app-layout">
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+            <ui:param name="rolePrefix" value="etudiant"/>
+            <ui:param name="currentPage" value="sujets"/>
+        </ui:include>
+
+        <main class="main-content">
+
+            <f:metadata>
+                <f:viewAction action="#{sujetBean.selectionnerSujet(param['id'])}"/>
+            </f:metadata>
+
+            <div class="page-header">
+                <h1 class="page-title">#{sujetBean.sujetSelectionne.titre}</h1>
+                <a href="#{request.contextPath}/etudiant/sujets.xhtml" class="btn-outline">← Retour</a>
+            </div>
+
+            <div class="detail-grid">
+
+                <!-- Détails -->
+                <div class="detail-card">
+                    <h3 class="card-section-title">📋 Description</h3>
+                    <p class="detail-description">#{sujetBean.sujetSelectionne.description}</p>
+                    <div class="detail-meta">
+                        <div class="meta-item">
+                            <span class="info-label">TECHNOLOGIES</span>
+                            <span class="info-value">
+                            #{empty sujetBean.sujetSelectionne.technologiesRequises
+                              ? 'Non précisé'
+                              : sujetBean.sujetSelectionne.technologiesRequises}
+                        </span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="info-label">NOMBRE D'ÉTUDIANTS</span>
+                            <span class="info-value">#{sujetBean.sujetSelectionne.nombreMaxEtudiants}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="info-label">STATUT</span>
+                            <span class="statut-badge statut-#{sujetBean.sujetSelectionne.statut.name().toLowerCase()}">
+                            #{sujetBean.sujetSelectionne.statut}
+                        </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Encadrant -->
+                <div class="detail-card">
+                    <h3 class="card-section-title">👨‍🏫 Encadrant proposant</h3>
+                    <div class="etudiant-affecte">
+                        <img src="#{request.contextPath}/#{sujetBean.sujetSelectionne.encadrant.photoOuDefaut}"
+                             class="sidebar-avatar-img" alt="photo"
+                             onerror="this.src='#{request.contextPath}/resources/images/default-avatar.png'"/>
+                        <div>
+                            <strong>#{sujetBean.sujetSelectionne.encadrant.nom}</strong>
+                            <span class="text-muted" style="display:block;">
+                            #{sujetBean.sujetSelectionne.encadrant.email}
+                        </span>
+                        </div>
+                    </div>
+
+                    <!-- Statut disponibilité -->
+                    <div style="margin-top: 20px;">
+                        <h:panelGroup rendered="#{sujetBean.sujetSelectionne.statut.name() == 'DISPONIBLE'}">
+                            <div class="alert alert-success">
+                                ✅ Ce sujet est disponible. Contactez l'encadrant pour postuler.
+                            </div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{sujetBean.sujetSelectionne.statut.name() == 'COMPLET'}">
+                            <div class="alert alert-error">
+                                🔒 Ce sujet est complet.
+                            </div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{sujetBean.sujetSelectionne.statut.name() == 'FERME'}">
+                            <div class="alert alert-error">
+                                ⛔ Ce sujet est fermé.
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</h:body>
+</html>

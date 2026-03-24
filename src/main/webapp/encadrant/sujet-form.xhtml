@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>PFE Manager – Sujet</title>
+    <h:outputStylesheet name="css/style.css"/>
+    <h:outputStylesheet name="css/dashboard.css"/>
+    <h:outputStylesheet name="css/sujets.css"/>
+</h:head>
+<h:body>
+    <div class="app-layout">
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+            <ui:param name="rolePrefix" value="encadrant"/>
+            <ui:param name="currentPage" value="sujets"/>
+        </ui:include>
+
+        <main class="main-content">
+
+            <!-- Charger le sujet si modification via param id -->
+            <f:metadata>
+                <f:viewAction action="#{sujetBean.selectionnerSujet(param['id'])}"/>
+            </f:metadata>
+
+            <div class="page-header">
+                <h1 class="page-title">
+                    #{sujetBean.sujetForm.id == null ? 'Nouveau sujet' : 'Modifier le sujet'}
+                </h1>
+                <a href="#{request.contextPath}/encadrant/sujets.xhtml" class="btn-outline">
+                    ← Retour
+                </a>
+            </div>
+
+            <div class="form-card">
+                <h:form id="sujetForm">
+
+                    <div class="form-group">
+                        <label class="form-label">Titre du sujet *</label>
+                        <h:inputText value="#{sujetBean.sujetForm.titre}"
+                                     styleClass="form-input"
+                                     required="true"
+                                     requiredMessage="Le titre est obligatoire"
+                                     placeholder="Ex: Application de gestion des stocks"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description *</label>
+                        <h:inputTextarea value="#{sujetBean.sujetForm.description}"
+                                         styleClass="form-input form-textarea"
+                                         required="true"
+                                         requiredMessage="La description est obligatoire"
+                                         rows="5"
+                                         placeholder="Décrivez le sujet, les objectifs, le contexte..."/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Technologies requises</label>
+                        <h:inputText value="#{sujetBean.sujetForm.technologiesRequises}"
+                                     styleClass="form-input"
+                                     placeholder="Ex: Java, Spring Boot, React, PostgreSQL"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nombre max d'étudiants *</label>
+                        <h:inputText value="#{sujetBean.sujetForm.nombreMaxEtudiants}"
+                                     styleClass="form-input form-input-sm"
+                                     required="true"
+                                     requiredMessage="Ce champ est obligatoire"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Statut</label>
+                        <h:selectOneMenu value="#{sujetBean.sujetForm.statut}" styleClass="form-input">
+                            <f:selectItem itemValue="DISPONIBLE" itemLabel="Disponible"/>
+                            <f:selectItem itemValue="COMPLET"    itemLabel="Complet"/>
+                            <f:selectItem itemValue="FERME"      itemLabel="Fermé"/>
+                        </h:selectOneMenu>
+                    </div>
+
+                    <h:messages styleClass="alert alert-error" errorClass="alert alert-error"/>
+
+                    <div class="form-actions">
+                        <a href="#{request.contextPath}/encadrant/sujets.xhtml" class="btn-outline">
+                            Annuler
+                        </a>
+                        <h:commandButton
+                                value="#{sujetBean.sujetForm.id == null ? '✚ Créer le sujet' : '💾 Enregistrer'}"
+                                action="#{sujetBean.sauvegarder}"
+                                styleClass="btn-primary"/>
+                    </div>
+
+                </h:form>
+            </div>
+        </main>
+    </div>
+</h:body>
+</html>

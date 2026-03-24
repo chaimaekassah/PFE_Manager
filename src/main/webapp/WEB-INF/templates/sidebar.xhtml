@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 <ui:composition>
 
-    <!-- JUSTE la sidebar, sans app-layout ni main -->
     <aside class="sidebar">
 
+        <!-- Logo -->
         <div class="sidebar-logo">
             <img src="#{request.contextPath}/resources/images/logo.png"
                  alt="PFE Manager"
                  class="sidebar-logo-img"/>
         </div>
+
+        <!-- Avatar utilisateur -->
         <div class="sidebar-user">
             <div class="sidebar-avatar">
                 <img src="#{request.contextPath}/#{authBean.utilisateurConnecte.photoOuDefaut}"
@@ -26,6 +27,7 @@
             </div>
         </div>
 
+        <!-- Navigation -->
         <nav class="sidebar-nav">
             <a href="#{request.contextPath}/#{rolePrefix}/dashboard.xhtml"
                class="sidebar-link #{currentPage == 'dashboard' ? 'active' : ''}">
@@ -35,14 +37,14 @@
                class="sidebar-link #{currentPage == 'profil' ? 'active' : ''}">
                 <span class="sidebar-icon">👤</span> Mon Profil
             </a>
-            <c:if test="#{authBean.utilisateurConnecte.role.name() != 'ADMINISTRATEUR'}">
-                <a href="#{request.contextPath}/#{rolePrefix}/sujets.xhtml"
-                   class="sidebar-link #{currentPage == 'sujets' ? 'active' : ''}">
-                    <span class="sidebar-icon">📋</span> Sujets
-                </a>
-            </c:if>
+            <!-- Sujets visible pour TOUS les rôles -->
+            <a href="#{request.contextPath}/#{rolePrefix}/sujets.xhtml"
+               class="sidebar-link #{currentPage == 'sujets' ? 'active' : ''}">
+                <span class="sidebar-icon">📋</span> Sujets
+            </a>
         </nav>
 
+        <!-- Logout -->
         <div class="sidebar-footer">
             <h:form>
                 <h:commandButton value="Se déconnecter"

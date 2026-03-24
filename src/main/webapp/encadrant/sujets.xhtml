@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>PFE Manager – Mes Sujets</title>
+    <h:outputStylesheet name="css/style.css"/>
+    <h:outputStylesheet name="css/dashboard.css"/>
+    <h:outputStylesheet name="css/sujets.css"/>
+</h:head>
+<h:body>
+    <div class="app-layout">
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+            <ui:param name="rolePrefix" value="encadrant"/>
+            <ui:param name="currentPage" value="sujets"/>
+        </ui:include>
+
+        <main class="main-content">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <h1 class="page-title">Mes Sujets</h1>
+                    <p class="page-subtitle">Gérez vos sujets de PFE proposés</p>
+                </div>
+                <a href="#{request.contextPath}/encadrant/sujet-form.xhtml" class="btn-primary"
+                   style="white-space:nowrap; align-self:center;">
+                    + Nouveau sujet
+                </a>
+            </div>
+
+            <h:messages styleClass="alert alert-success"
+                        infoClass="alert alert-success"
+                        errorClass="alert alert-error"
+                        globalOnly="true"/>
+
+            <div class="sujets-grid">
+                <ui:repeat value="#{sujetBean.sujets}" var="s">
+                    <div class="sujet-card">
+                        <div class="sujet-card-header">
+                            <h3 class="sujet-titre">#{s.titre}</h3>
+                            <span class="statut-badge statut-#{s.statut.name().toLowerCase()}">
+                            #{s.statut}
+                        </span>
+                        </div>
+                        <p class="sujet-desc">#{s.description}</p>
+                        <div class="sujet-meta">
+                            <span>🛠 #{s.technologiesRequises}</span>
+                            <span>👥 #{s.nombreMaxEtudiants} étudiant(s) max</span>
+                        </div>
+                        <div class="sujet-actions">
+                            <a href="#{request.contextPath}/encadrant/sujet-detail.xhtml?id=#{s.id}"
+                               class="btn-outline">👁 Voir</a>
+                            <a href="#{request.contextPath}/encadrant/sujet-form.xhtml?id=#{s.id}"
+                               class="btn-outline">✏️ Modifier</a>
+                            <h:form>
+                                <h:commandButton value="🗑 Supprimer"
+                                                 styleClass="btn-danger"
+                                                 action="#{sujetBean.supprimerSujet(s.id)}"
+                                                 onclick="return confirm('Supprimer ce sujet ?')"/>
+                            </h:form>
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+
+            <h:panelGroup rendered="#{empty sujetBean.sujets}">
+                <div class="empty-state">
+                    <p>📭 Vous n'avez pas encore proposé de sujet.</p>
+                    <a href="#{request.contextPath}/encadrant/sujet-form.xhtml" class="btn-primary">
+                        Créer mon premier sujet
+                    </a>
+                </div>
+            </h:panelGroup>
+        </main>
+    </div>
+</h:body>
+</html>

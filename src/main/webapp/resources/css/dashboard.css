@@ -1,0 +1,445 @@
+/* ══════════════════════════════════════════════
+   LAYOUT GÉNÉRAL
+══════════════════════════════════════════════ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ══════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════ */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: #1a3c6e;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    z-index: 100;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+}
+
+.sidebar-logo {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-logo-img {
+    width: 200px;
+    height: auto;
+    border-radius: 10px;
+    padding: 8px;
+    background: white;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* Avatar utilisateur */
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-avatar-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255,255,255,0.4);
+}
+
+.sidebar-user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-user-name {
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+}
+
+.sidebar-user-role {
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Navigation */
+.sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 16px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background: rgba(255,255,255,0.12);
+    color: white;
+}
+
+.sidebar-link.active {
+    background: rgba(255,255,255,0.18);
+    color: white;
+    font-weight: 600;
+}
+
+.sidebar-icon {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+/* Footer sidebar */
+.sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-logout {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.sidebar-logout:hover {
+    background: rgba(220,38,38,0.3);
+    color: white;
+    border-color: rgba(220,38,38,0.5);
+}
+
+/* ══════════════════════════════════════════════
+   CONTENU PRINCIPAL
+══════════════════════════════════════════════ */
+.main-content {
+    margin-left: 260px;
+    flex: 1;
+    padding: 32px;
+    min-height: 100vh;
+}
+
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a3c6e;
+    margin-bottom: 4px;
+}
+
+.page-subtitle {
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* ══════════════════════════════════════════════
+   ALERTES
+══════════════════════════════════════════════ */
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #10b981;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
+
+/* ══════════════════════════════════════════════
+   PAGE PROFIL
+══════════════════════════════════════════════ */
+.profil-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* Carte commune */
+.profil-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* Carte photo */
+.profil-photo-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+}
+
+.profil-avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profil-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #e0e7ff;
+}
+
+.profil-avatar-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: #1a3c6e;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    border: 2px solid white;
+}
+
+.profil-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-top: 4px;
+}
+
+/* Badges de rôle */
+.profil-role-badge, .role-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.role-admin {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.role-encadrant {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.role-etudiant {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Upload photo */
+.upload-form {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.upload-zone {
+    margin-bottom: 10px;
+}
+
+.upload-input {
+    display: none;
+}
+
+.upload-label {
+    display: block;
+    padding: 10px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #64748b;
+    transition: all 0.2s;
+}
+
+.upload-label:hover {
+    border-color: #1a3c6e;
+    color: #1a3c6e;
+    background: #f0f4ff;
+}
+
+.btn-upload {
+    width: 100%;
+    background: #1a3c6e;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-upload:hover {
+    background: #0f2548;
+}
+
+/* Carte informations */
+.card-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a3c6e;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e0e7ff;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.info-item {}
+
+.info-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+/* Formulaire mot de passe */
+.password-form {}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: border-color 0.2s;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: #1a3c6e;
+    box-shadow: 0 0 0 3px rgba(26,60,110,0.08);
+}
+
+.form-actions {
+    margin-top: 8px;
+}
+
+.btn-primary {
+    background: #1a3c6e;
+    color: white;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #0f2548;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+    .sidebar {
+        width: 70px;
+        min-width: 70px;
+    }
+    .sidebar-user-info,
+    .sidebar-user-name,
+    .sidebar-user-role,
+    .sidebar-link span:not(.sidebar-icon) { display: none; }
+    .main-content { margin-left: 70px; }
+    .profil-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: 1fr; }
+}

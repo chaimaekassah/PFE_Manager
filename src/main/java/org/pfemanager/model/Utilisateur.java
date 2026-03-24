@@ -25,7 +25,18 @@ public class Utilisateur implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+    @Column(name = "photo")
+    private String photo;
 
+    public String getPhoto() { return photo; }
+    public void setPhoto(String photo) { this.photo = photo; }
+
+    // Helper pour afficher la photo ou une image par défaut
+    public String getPhotoOuDefaut() {
+        return (photo != null && !photo.isEmpty())
+                ? photo
+                : "resources/images/default-avatar.png";
+    }
     // Constructeurs
     public Utilisateur() {}
 

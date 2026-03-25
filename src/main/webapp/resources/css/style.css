@@ -1,3 +1,38 @@
+/* ===== RESET GLOBAL ===== */
+/* Modifiez cette partie dans style.css */
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%; /* Utilisez min-height au lieu de height: 100% */
+}
+
+body {
+    overflow-x: hidden;
+    overflow-y: auto; /* Laissez le navigateur gérer le scroll naturellement */
+}
+
+.app-layout {
+    display: flex;
+    min-height: 100vh; /* S'assure que le layout prend toute la hauteur */
+    align-items: stretch;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 260px;
+    flex-shrink: 0;
+}
+
+/* ===== CONTENU PRINCIPAL ===== */
+.main-content {
+    margin-left: 260px;
+    padding: 32px;
+    min-height: 100vh;
+
+    /* 🔥 FIX SCROLL */
+    position: relative;
+}
+
 /* ===== FORM CONTROLS ===== */
 .login-card {
     background: white;
@@ -7,6 +42,7 @@
     width: 100%;
     max-width: 460px;
 }
+
 .form-control {
     width: 100%;
     padding: 10px;
@@ -17,7 +53,7 @@
     box-sizing: border-box;
 }
 
-/* ===== PASSWORD HEADER (label + lien sur la même ligne) ===== */
+/* ===== PASSWORD HEADER ===== */
 .password-header {
     display: flex;
     justify-content: space-between;
@@ -38,7 +74,6 @@
     color: #1a3c6e;
     text-decoration: none;
     font-weight: 500;
-    /* PAS de display:block ici ! */
 }
 
 .forgot-link:hover {
@@ -92,8 +127,4 @@
     border-radius: 5px;
     margin-bottom: 15px;
     text-align: center;
-}
-/* Fix main-content padding top */
-.main-content {
-    padding-top: 32px;
 }

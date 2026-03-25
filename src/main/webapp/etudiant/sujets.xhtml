@@ -9,49 +9,74 @@
     <h:outputStylesheet name="css/dashboard.css"/>
     <h:outputStylesheet name="css/sujets.css"/>
 </h:head>
-<h:body>
-    <div class="app-layout">
+<h:body style="margin: 0; padding: 0; display: block !important;">
+    <div class="app-layout" style="align-items: flex-start !important; display: flex !important;">
         <ui:include src="/WEB-INF/templates/sidebar.xhtml">
             <ui:param name="rolePrefix" value="etudiant"/>
             <ui:param name="currentPage" value="sujets"/>
         </ui:include>
 
-        <main class="main-content">
+        <main class="main-content" style="margin-top: 0 !important; padding-top: 32px !important; display: block !important; height: auto !important;">
 
-            <!-- Header -->
-            <div style="margin-bottom:20px;">
-                <h1 class="page-title">Sujets disponibles</h1>
+            <div style="width: 100%; display: block; margin-bottom: 20px;">
+                <h1 class="page-title" style="margin-top: 0 !important;">Sujets disponibles</h1>
                 <p class="page-subtitle">Consultez les sujets proposés par les encadrants</p>
             </div>
 
-            <!-- Barre de recherche -->
-            <h:form style="display:flex; gap:10px; margin-bottom:24px; align-items:center;">
-                <h:inputText value="#{sujetBean.motCle}"
-                             style="flex:1; padding:10px 16px; border:1.5px solid #e2e8f0;
-                                border-radius:8px; font-size:14px; outline:none;"
-                             placeholder="Rechercher par titre ou technologie..."/>
-                <h:commandButton value="🔍 Rechercher"
-                                 action="#{sujetBean.rechercher}"
-                                 styleClass="btn-primary"/>
-                <h:commandButton value="✕"
-                                 action="#{sujetBean.reinitialiserRecherche}"
-                                 styleClass="btn-outline"/>
-            </h:form>
+            <h:form id="searchForm" style="margin-bottom: 24px; width: 100%;">
+                <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+                    <tr>
+                        <td style="padding-right: 10px;">
+                            <h:inputText value="#{sujetBean.motCle}"
+                                         style="width: 100%;
+                                    height: 42px;
+                                    padding: 0 16px;
+                                    border: 1.5px solid #e2e8f0;
+                                    border-radius: 8px;
+                                    font-size: 14px;
+                                    outline: none;
+                                    box-sizing: border-box;"
+                                         placeholder="Rechercher par titre ou technologie..."/>
+                        </td>
 
+                        <td style="width: 150px; padding-right: 10px; vertical-align: middle;">
+                            <h:commandButton value="🔍 Rechercher"
+                                             action="#{sujetBean.rechercher}"
+                                             styleClass="btn-primary"
+                                             style="width: 100%;
+                                        height: 42px;
+                                        margin: 0 !important;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        white-space: nowrap;"/>
+                        </td>
+
+                        <td style="width: 42px; vertical-align: middle;">
+                            <h:commandButton value="✕"
+                                             action="#{sujetBean.reinitialiserRecherche}"
+                                             styleClass="btn-outline"
+                                             style="width: 100%;
+                                        height: 42px;
+                                        margin: 0 !important;
+                                        border-radius: 8px;
+                                        cursor: pointer;"/>
+                        </td>
+                    </tr>
+                </table>
+            </h:form>
             <h:messages styleClass="alert alert-success"
                         infoClass="alert alert-success"
                         errorClass="alert alert-error"
                         globalOnly="true"/>
 
-            <!-- Grille sujets -->
             <div class="sujets-grid">
                 <ui:repeat value="#{sujetBean.sujets}" var="s">
                     <div class="sujet-card">
                         <div class="sujet-card-header">
                             <h3 class="sujet-titre">#{s.titre}</h3>
                             <span class="statut-badge statut-#{s.statut.name().toLowerCase()}">
-                            #{s.statut}
-                        </span>
+                                #{s.statut}
+                            </span>
                         </div>
                         <p class="sujet-desc">#{s.description}</p>
                         <div class="sujet-meta">

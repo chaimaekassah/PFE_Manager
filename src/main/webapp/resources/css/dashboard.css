@@ -152,11 +152,18 @@ body {
 /* ══════════════════════════════════════════════
    CONTENU PRINCIPAL
 ══════════════════════════════════════════════ */
+/* Modifiez dans dashboard.css */
 .main-content {
-    margin-left: 260px;
+    margin-left: 260px; /* Largeur de la sidebar */
     flex: 1;
     padding: 32px;
     min-height: 100vh;
+    background: #f1f5f9;
+
+    /* Ajoutez ces propriétés pour garantir l'alignement en haut */
+    display: block;
+    position: relative;
+    top: 0;
 }
 
 .page-header {

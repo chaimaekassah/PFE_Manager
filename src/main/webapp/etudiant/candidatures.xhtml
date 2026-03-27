@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Mes Candidatures</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+
+    <div class="navbar">
+        <div class="navbar-left">
+            <h:graphicImage library="images" name="logo.png" styleClass="logo"/>
+            <div class="app-info">
+                <div class="app-title">PFE Manager</div>
+                <div class="app-subtitle">Projets de Fin d'Études</div>
+            </div>
+        </div>
+
+        <div class="navbar-center">
+            <h:link outcome="/test-module" styleClass="nav-link">🏠 Accueil</h:link>
+            <h:link outcome="/etudiant/candidatures" styleClass="nav-link active">📝 Candidatures</h:link>
+            <h:link outcome="/etudiant/suivi-projet" styleClass="nav-link">📊 Suivi</h:link>
+        </div>
+
+        <div class="navbar-right">
+            #{testModuleBean.currentUser.nomComplet}
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+
+        <div class="page-title">📝 Mes Candidatures</div>
+        <div class="page-subtitle">
+            Consultez l’historique de vos candidatures et leur état actuel.
+        </div>
+
+        <h:messages styleClass="messages"
+                    infoClass="message message-info"
+                    errorClass="message message-error"/>
+
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-value">#{candidatureEtudiantBean.totalCandidatures}</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">#{candidatureEtudiantBean.candidaturesEnAttente}</div>
+                <div class="stat-label">En attente</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">#{candidatureEtudiantBean.candidaturesAcceptees}</div>
+                <div class="stat-label">Acceptées</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">#{candidatureEtudiantBean.candidaturesRefusees}</div>
+                <div class="stat-label">Refusées</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">📋 Liste de mes candidatures</h2>
+            </div>
+
+            <h:form id="listeForm">
+                <h:dataTable value="#{candidatureEtudiantBean.candidatures}"
+                             var="candidature"
+                             styleClass="data-table"
+                             rendered="#{not empty candidatureEtudiantBean.candidatures}">
+
+                    <h:column>
+                        <f:facet name="header">Sujet</f:facet>
+                        #{candidature.sujet}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Encadrant(e)</f:facet>
+                        #{candidature.encadrant.nomComplet}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Date</f:facet>
+                        #{candidatureEtudiantBean.formatDate(candidature.dateCandidature)}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Statut</f:facet>
+                        <span class="badge #{candidatureEtudiantBean.getStatutClass(candidature.statut)}">
+                        #{candidature.statut.libelle}
+                    </span>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <div class="action-buttons">
+                            <h:commandButton value="Voir"
+                                             action="#{candidatureEtudiantBean.voirDetails(candidature)}"
+                                             styleClass="btn btn-primary btn-sm">
+                                <f:ajax execute="@this" render="listeForm detailsPanel"/>
+                            </h:commandButton>
+
+                            <h:commandButton value="Retirer"
+                                             action="#{candidatureEtudiantBean.retirer(candidature.id)}"
+                                             rendered="#{candidatureEtudiantBean.canRetirer(candidature)}"
+                                             styleClass="btn btn-danger btn-sm"
+                                             onclick="return confirm('Voulez-vous vraiment retirer cette candidature ?');">
+                                <f:ajax execute="@this" render="listeForm detailsPanel"/>
+                            </h:commandButton>
+                        </div>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty candidatureEtudiantBean.candidatures}" layout="block">
+                    <div class="card">
+                        <p>Aucune candidature pour le moment.</p>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </div>
+
+        <h:panelGroup id="detailsPanel" layout="block"
+                      rendered="#{candidatureEtudiantBean.selectedCandidature != null}">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">🔍 Détails de la candidature</h3>
+                </div>
+
+                <div class="section-grid">
+                    <div class="info-list">
+                        <div class="info-item">
+                            <span class="info-label">Sujet</span>
+                            <span class="info-value">#{candidatureEtudiantBean.selectedCandidature.sujet}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Encadrant(e)</span>
+                            <span class="info-value">#{candidatureEtudiantBean.selectedCandidature.encadrant.nomComplet}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Date de candidature</span>
+                            <span class="info-value">
+                            #{candidatureEtudiantBean.formatDate(candidatureEtudiantBean.selectedCandidature.dateCandidature)}
+                        </span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Statut</span>
+                            <span class="info-value">
+                            <span class="badge #{candidatureEtudiantBean.getStatutClass(candidatureEtudiantBean.selectedCandidature.statut)}">
+                                #{candidatureEtudiantBean.selectedCandidature.statut.libelle}
+                            </span>
+                        </span>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <strong>💬 Message de motivation</strong>
+                        <p style="margin-top: 10px;">
+                            #{candidatureEtudiantBean.selectedCandidature.messageMotivation}
+                        </p>
+
+                        <h:panelGroup rendered="#{candidatureEtudiantBean.selectedCandidature.remarqueEncadrant != null}">
+                            <hr style="margin: 16px 0; border: none; border-top: 1px solid #dbe4ff;" />
+                            <strong>✍️ Remarque de l'encadrant(e)</strong>
+                            <p style="margin-top: 10px;">
+                                #{candidatureEtudiantBean.selectedCandidature.remarqueEncadrant}
+                            </p>
+                        </h:panelGroup>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h:form id="closeForm">
+                        <h:commandButton value="Fermer"
+                                         action="#{candidatureEtudiantBean.annuler}"
+                                         styleClass="btn btn-secondary">
+                            <f:ajax execute="@this" render=":detailsPanel"/>
+                        </h:commandButton>
+                    </h:form>
+                </div>
+            </div>
+        </h:panelGroup>
+
+    </div>
+
+</h:body>
+</html>

@@ -11,108 +11,150 @@
 </h:head>
 
 <h:body>
-    <div class="header">
-        <div class="header-content">
-            <h1>➕ Ajouter un Utilisateur</h1>
-            <div class="user-info">
-                <span class="user-badge">
-                    #{testModuleBean.currentUser.nomComplet}
-                </span>
-            </div>
-        </div>
-    </div>
 
-    <div class="container">
-        <!-- Navigation -->
-        <div class="navigation">
-            <div class="nav-links">
-                <h:link outcome="/test-module" styleClass="nav-link">🏠 Accueil</h:link>
-                <h:link outcome="/admin/utilisateurs" styleClass="nav-link">👥 Utilisateurs</h:link>
-            </div>
-        </div>
+    <div class="main-container">
 
-        <!-- Messages -->
-        <h:messages styleClass="messages" infoClass="message message-info"
-                    errorClass="message message-error"/>
-
-        <!-- Formulaire -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">📝 Informations de l'utilisateur</h2>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h:graphicImage library="images" name="logo.png" styleClass="sidebar-logo-img"/>
+                <div class="sidebar-logo-title">PFE Manager</div>
+                <div class="sidebar-logo-subtitle">Projets de Fin d'Études</div>
             </div>
 
-            <h:form>
-                <div class="form-group">
-                    <h:outputLabel value="Nom * :" for="nom" styleClass="form-label"/>
-                    <h:inputText id="nom"
-                                 value="#{adminUserFormBean.user.nom}"
-                                 styleClass="form-control"
-                                 required="true"
-                                 requiredMessage="Le nom est obligatoire"/>
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar">
+                    #{testModuleBean.currentUser.nomComplet.substring(0,1)}
+                </div>
+                <div class="sidebar-user-info">
+                    <p class="sidebar-user-name">#{testModuleBean.currentUser.nomComplet}</p>
+                    <p class="sidebar-user-role">#{testModuleBean.currentUser.role.libelle}</p>
+                </div>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <h:link outcome="/test-module" styleClass="sidebar-nav-link">
+                        <span class="sidebar-nav-icon">🏠</span>
+                        Accueil
+                    </h:link>
+                </li>
+
+                <li class="sidebar-nav-item">
+                    <h:link outcome="/admin/gestion-utilisateurs" styleClass="sidebar-nav-link active">
+                        <span class="sidebar-nav-icon">👥</span>
+                        Gestion des Utilisateurs
+                    </h:link>
+                </li>
+            </ul>
+
+            <div class="sidebar-logout">
+                <h:form>
+                    <h:commandButton value="Se déconnecter"
+                                     action="#{testModuleBean.logout}"
+                                     styleClass="logout-btn"/>
+                </h:form>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="content-wrapper">
+
+            <div class="content-header">
+                <h1>Ajouter un Utilisateur</h1>
+                <p>Remplissez les informations pour créer un nouveau compte.</p>
+            </div>
+
+            <!-- Messages -->
+            <h:messages styleClass="messages"
+                        infoClass="message message-info"
+                        errorClass="message message-error"/>
+
+            <!-- Formulaire -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="card-title-icon">📝</span>
+                        Informations de l'utilisateur
+                    </h2>
                 </div>
 
-                <div class="form-group">
-                    <h:outputLabel value="Prénom * :" for="prenom" styleClass="form-label"/>
-                    <h:inputText id="prenom"
-                                 value="#{adminUserFormBean.user.prenom}"
-                                 styleClass="form-control"
-                                 required="true"
-                                 requiredMessage="Le prénom est obligatoire"/>
-                </div>
-
-                <div class="form-group">
-                    <h:outputLabel value="Email * :" for="email" styleClass="form-label"/>
-                    <h:inputText id="email"
-                                 value="#{adminUserFormBean.user.email}"
-                                 styleClass="form-control"
-                                 required="true"
-                                 requiredMessage="L'email est obligatoire"
-                                 validatorMessage="Format d'email invalide">
-                        <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@(.+)$"/>
-                    </h:inputText>
-                </div>
-
-                <div class="form-group">
-                    <h:outputLabel value="Rôle * :" for="role" styleClass="form-label"/>
-                    <h:selectOneMenu id="role"
-                                     value="#{adminUserFormBean.user.role}"
+                <h:form>
+                    <div class="form-group">
+                        <h:outputLabel value="Nom * :" for="nom" styleClass="form-label"/>
+                        <h:inputText id="nom"
+                                     value="#{adminUserFormBean.user.nom}"
                                      styleClass="form-control"
                                      required="true"
-                                     requiredMessage="Le rôle est obligatoire">
-                        <f:selectItem itemValue="" itemLabel="-- Sélectionnez un rôle --"/>
-                        <f:selectItems value="#{adminUserFormBean.allRoles}"
-                                       var="role"
-                                       itemValue="#{role}"
-                                       itemLabel="#{role.libelle}"/>
-                    </h:selectOneMenu>
-                </div>
+                                     requiredMessage="Le nom est obligatoire"/>
+                    </div>
 
-                <div class="form-group">
-                    <h:outputLabel value="Statut * :" for="statut" styleClass="form-label"/>
-                    <h:selectOneMenu id="statut"
-                                     value="#{adminUserFormBean.user.statut}"
+                    <div class="form-group">
+                        <h:outputLabel value="Prénom * :" for="prenom" styleClass="form-label"/>
+                        <h:inputText id="prenom"
+                                     value="#{adminUserFormBean.user.prenom}"
                                      styleClass="form-control"
                                      required="true"
-                                     requiredMessage="Le statut est obligatoire">
-                        <f:selectItems value="#{adminUserFormBean.allStatuts}"
-                                       var="statut"
-                                       itemValue="#{statut}"
-                                       itemLabel="#{statut.libelle}"/>
-                    </h:selectOneMenu>
-                </div>
+                                     requiredMessage="Le prénom est obligatoire"/>
+                    </div>
 
-                <div class="actions">
-                    <h:commandButton value="💾 Enregistrer"
-                                     action="#{adminUserFormBean.save}"
-                                     styleClass="btn btn-success"/>
+                    <div class="form-group">
+                        <h:outputLabel value="Email * :" for="email" styleClass="form-label"/>
+                        <h:inputText id="email"
+                                     value="#{adminUserFormBean.user.email}"
+                                     styleClass="form-control"
+                                     required="true"
+                                     requiredMessage="L'email est obligatoire"
+                                     validatorMessage="Format d'email invalide">
+                            <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@(.+)$"/>
+                        </h:inputText>
+                    </div>
 
-                    <h:commandButton value="❌ Annuler"
-                                     action="#{adminUserFormBean.cancel}"
-                                     styleClass="btn btn-secondary"
-                                     immediate="true"/>
-                </div>
-            </h:form>
-        </div>
+                    <div class="form-group">
+                        <h:outputLabel value="Rôle * :" for="role" styleClass="form-label"/>
+                        <h:selectOneMenu id="role"
+                                         value="#{adminUserFormBean.user.role}"
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="Le rôle est obligatoire">
+                            <f:selectItem itemValue="" itemLabel="-- Sélectionnez un rôle --"/>
+                            <f:selectItems value="#{adminUserFormBean.allRoles}"
+                                           var="role"
+                                           itemValue="#{role}"
+                                           itemLabel="#{role.libelle}"/>
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel value="Statut * :" for="statut" styleClass="form-label"/>
+                        <h:selectOneMenu id="statut"
+                                         value="#{adminUserFormBean.user.statut}"
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="Le statut est obligatoire">
+                            <f:selectItems value="#{adminUserFormBean.allStatuts}"
+                                           var="statut"
+                                           itemValue="#{statut}"
+                                           itemLabel="#{statut.libelle}"/>
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div class="btn-group" style="margin-top: 20px;">
+                        <h:commandButton value="💾 Enregistrer"
+                                         action="#{adminUserFormBean.save}"
+                                         styleClass="btn btn-success"/>
+
+                        <h:commandButton value="❌ Annuler"
+                                         action="#{adminUserFormBean.cancel}"
+                                         styleClass="btn btn-secondary"
+                                         immediate="true"/>
+                    </div>
+                </h:form>
+            </div>
+
+        </main>
+
     </div>
+
 </h:body>
 </html>

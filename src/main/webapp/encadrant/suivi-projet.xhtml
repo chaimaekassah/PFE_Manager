@@ -11,237 +11,302 @@
 
 <h:body>
 
-    <div class="navbar">
-        <div class="navbar-left">
-            <h:graphicImage library="images" name="logo.png" styleClass="logo"/>
-            <div class="app-info">
-                <div class="app-title">PFE Manager</div>
-                <div class="app-subtitle">Projets de Fin d'Études</div>
+    <div class="main-container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h:graphicImage library="images" name="logo.png" styleClass="sidebar-logo-img"/>
+                <div class="sidebar-logo-title">PFE Manager</div>
+                <div class="sidebar-logo-subtitle">Projets de Fin d'Études</div>
             </div>
-        </div>
 
-        <div class="navbar-center">
-            <h:link outcome="/test-module" styleClass="nav-link">🏠 Accueil</h:link>
-            <h:link outcome="/encadrant/candidatures" styleClass="nav-link">📥 Candidatures Reçues</h:link>
-            <h:link outcome="/encadrant/suivi-projet" styleClass="nav-link active">📁 Projets Encadrés</h:link>
-        </div>
-
-        <div class="navbar-right">
-            #{testModuleBean.currentUser.nomComplet}
-        </div>
-    </div>
-
-    <div class="content-wrapper">
-
-        <div class="page-title">📁 Projets Encadrés</div>
-        <div class="page-subtitle">
-            Consultez et suivez les projets que vous encadrez.
-        </div>
-
-        <h:messages styleClass="messages"
-                    infoClass="message message-info"
-                    errorClass="message message-error"/>
-
-        <div class="stats-container">
-            <div class="stat-box">
-                <div class="stat-value">#{projetEncadrantBean.projetsEnCours}</div>
-                <div class="stat-label">Projets en cours</div>
-            </div>
-        </div>
-
-        <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet == null}">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">📋 Liste des projets</h2>
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar">
+                    #{testModuleBean.currentUser.nomComplet.substring(0,1)}
                 </div>
+                <div class="sidebar-user-info">
+                    <p class="sidebar-user-name">#{testModuleBean.currentUser.nomComplet}</p>
+                    <p class="sidebar-user-role">#{testModuleBean.currentUser.role.libelle}</p>
+                </div>
+            </div>
 
-                <h:form id="listeProjetsForm">
-                    <h:dataTable value="#{projetEncadrantBean.projets}"
-                                 var="projet"
-                                 styleClass="data-table"
-                                 rendered="#{not empty projetEncadrantBean.projets}">
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <h:link outcome="/test-module" styleClass="sidebar-nav-link">
+                        <span class="sidebar-nav-icon">🏠</span>
+                        Accueil
+                    </h:link>
+                </li>
 
-                        <h:column>
-                            <f:facet name="header">Sujet</f:facet>
-                            #{projet.sujet}
-                        </h:column>
+                <li class="sidebar-nav-item">
+                    <h:link outcome="/encadrant/candidatures" styleClass="sidebar-nav-link">
+                        <span class="sidebar-nav-icon">📥</span>
+                        Candidatures Reçues
+                    </h:link>
+                </li>
 
-                        <h:column>
-                            <f:facet name="header">Étudiant(e)</f:facet>
-                            #{projet.etudiant.nomComplet}
-                        </h:column>
+                <li class="sidebar-nav-item">
+                    <h:link outcome="/encadrant/suivi-projet" styleClass="sidebar-nav-link active">
+                        <span class="sidebar-nav-icon">📁</span>
+                        Projets Encadrés
+                    </h:link>
+                </li>
+            </ul>
 
-                        <h:column>
-                            <f:facet name="header">Date début</f:facet>
-                            #{projetEncadrantBean.formatDate(projet.dateDebut)}
-                        </h:column>
-
-                        <h:column>
-                            <f:facet name="header">Statut</f:facet>
-                            <span class="badge #{projetEncadrantBean.getStatutProjetClass(projet.statut)}">
-                            #{projet.statut.libelle}
-                        </span>
-                        </h:column>
-
-                        <h:column>
-                            <f:facet name="header">Actions</f:facet>
-                            <h:commandButton value="Voir"
-                                             action="#{projetEncadrantBean.selectionnerProjet(projet)}"
-                                             styleClass="btn btn-primary btn-sm">
-                                <f:ajax execute="@this" render="listeProjetsForm detailsProjetPanel"/>
-                            </h:commandButton>
-                        </h:column>
-                    </h:dataTable>
-
-                    <h:panelGroup rendered="#{empty projetEncadrantBean.projets}">
-                        <p>Aucun projet encadré pour le moment.</p>
-                    </h:panelGroup>
+            <div class="sidebar-logout">
+                <h:form>
+                    <h:commandButton value="Se déconnecter"
+                                     action="#{testModuleBean.logout}"
+                                     styleClass="logout-btn"/>
                 </h:form>
             </div>
-        </h:panelGroup>
+        </aside>
 
-        <h:panelGroup id="detailsProjetPanel" layout="block"
-                      rendered="#{projetEncadrantBean.selectedProjet != null}">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">🔍 Détails du projet</h2>
-                </div>
+        <!-- MAIN CONTENT -->
+        <main class="content-wrapper">
 
-                <div class="section-grid">
-                    <div class="info-list">
-                        <div class="info-item">
-                            <span class="info-label">Sujet</span>
-                            <span class="info-value">#{projetEncadrantBean.selectedProjet.sujet}</span>
-                        </div>
+            <div class="content-header">
+                <h1>Projets Encadrés</h1>
+                <p>Consultez et suivez les projets que vous encadrez.</p>
+            </div>
 
-                        <div class="info-item">
-                            <span class="info-label">Étudiant(e)</span>
-                            <span class="info-value">#{projetEncadrantBean.selectedProjet.etudiant.nomComplet}</span>
-                        </div>
+            <h:messages styleClass="messages"
+                        infoClass="info-message"
+                        errorClass="error-message"/>
 
-                        <div class="info-item">
-                            <span class="info-label">Date de début</span>
-                            <span class="info-value">#{projetEncadrantBean.formatDate(projetEncadrantBean.selectedProjet.dateDebut)}</span>
-                        </div>
-
-                        <div class="info-item">
-                            <span class="info-label">Date de fin</span>
-                            <span class="info-value">#{projetEncadrantBean.formatDate(projetEncadrantBean.selectedProjet.dateFin)}</span>
-                        </div>
-                    </div>
-
-                    <div class="project-status-box">
-                        <div class="project-status-title">Statut actuel</div>
-                        <div class="project-status-value">
-                        <span class="badge #{projetEncadrantBean.getStatutProjetClass(projetEncadrantBean.selectedProjet.statut)}">
-                            #{projetEncadrantBean.selectedProjet.statut.libelle}
-                        </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top:20px;">
-                    <div class="card-header">
-                        <h3 class="card-title">✏️ Modifier le statut</h3>
-                    </div>
-
-                    <h:form id="statutForm">
-                        <div class="form-group">
-                            <label class="form-label">Nouveau statut</label>
-                            <h:selectOneMenu value="#{projetEncadrantBean.nouveauStatut}" styleClass="form-control">
-                                <f:selectItems value="#{projetEncadrantBean.allStatuts}"
-                                               var="statut"
-                                               itemValue="#{statut}"
-                                               itemLabel="#{statut.libelle}" />
-                            </h:selectOneMenu>
-                        </div>
-
-                        <h:commandButton value="Mettre à jour"
-                                         action="#{projetEncadrantBean.changerStatut}"
-                                         styleClass="btn btn-success">
-                            <f:ajax execute="@form" render=":detailsProjetPanel :listeProjetsForm"/>
-                        </h:commandButton>
-                    </h:form>
-                </div>
-
-                <div class="card" style="margin-top:20px;">
-                    <div class="card-header">
-                        <h3 class="card-title">💬 Ajouter un commentaire</h3>
-                    </div>
-
-                    <h:form id="commentaireForm">
-                        <div class="form-group">
-                            <h:inputTextarea value="#{projetEncadrantBean.nouveauCommentaire}"
-                                             styleClass="form-control"/>
-                        </div>
-
-                        <h:commandButton value="Ajouter"
-                                         action="#{projetEncadrantBean.ajouterCommentaire}"
-                                         styleClass="btn btn-primary">
-                            <f:ajax execute="@form" render=":detailsProjetPanel"/>
-                        </h:commandButton>
-                    </h:form>
-                </div>
-
-                <div class="card" style="margin-top:20px;">
-                    <div class="card-header">
-                        <h3 class="card-title">🗨️ Commentaires</h3>
-                    </div>
-
-                    <h:dataTable value="#{projetEncadrantBean.commentaires}"
-                                 var="commentaire"
-                                 styleClass="data-table"
-                                 rendered="#{not empty projetEncadrantBean.commentaires}">
-                        <h:column>
-                            <f:facet name="header">Auteur</f:facet>
-                            #{commentaire.auteur.nomComplet}
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">Commentaire</f:facet>
-                            #{commentaire.contenu}
-                        </h:column>
-                    </h:dataTable>
-
-                    <h:panelGroup rendered="#{empty projetEncadrantBean.commentaires}">
-                        <p>Aucun commentaire.</p>
-                    </h:panelGroup>
-                </div>
-
-                <div class="card" style="margin-top:20px;">
-                    <div class="card-header">
-                        <h3 class="card-title">📎 Documents</h3>
-                    </div>
-
-                    <h:dataTable value="#{projetEncadrantBean.documents}"
-                                 var="document"
-                                 styleClass="data-table"
-                                 rendered="#{not empty projetEncadrantBean.documents}">
-                        <h:column>
-                            <f:facet name="header">Nom</f:facet>
-                            #{document.nom}
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">Type</f:facet>
-                            #{document.type}
-                        </h:column>
-                    </h:dataTable>
-
-                    <h:panelGroup rendered="#{empty projetEncadrantBean.documents}">
-                        <p>Aucun document.</p>
-                    </h:panelGroup>
-                </div>
-
-                <div style="margin-top: 20px;">
-                    <h:form id="retourForm">
-                        <h:commandButton value="Retour à la liste"
-                                         action="#{projetEncadrantBean.retourListe}"
-                                         styleClass="btn btn-secondary">
-                            <f:ajax execute="@this" render=":detailsProjetPanel :listeProjetsForm"/>
-                        </h:commandButton>
-                    </h:form>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-value">#{projetEncadrantBean.projetsEnCours}</div>
+                    <div class="stat-label">Projets en cours</div>
                 </div>
             </div>
-        </h:panelGroup>
+
+            <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet == null}">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="card-title-icon">📋</span>
+                            Liste des projets
+                        </h2>
+                    </div>
+
+                    <h:form id="listeProjetsForm">
+                        <h:dataTable value="#{projetEncadrantBean.projets}"
+                                     var="projet"
+                                     styleClass="data-table"
+                                     rendered="#{not empty projetEncadrantBean.projets}">
+
+                            <h:column>
+                                <f:facet name="header">Sujet</f:facet>
+                                #{projet.sujet}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Étudiant(e)</f:facet>
+                                #{projet.etudiant.nomComplet}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Date début</f:facet>
+                                #{projetEncadrantBean.formatDate(projet.dateDebut)}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Statut</f:facet>
+                                <span class="badge #{projetEncadrantBean.getStatutProjetClass(projet.statut)}">
+                                #{projet.statut.libelle}
+                            </span>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Actions</f:facet>
+                                <div class="btn-group">
+                                    <h:commandButton value="Voir"
+                                                     action="#{projetEncadrantBean.selectionnerProjet(projet)}"
+                                                     styleClass="btn btn-primary btn-sm">
+                                        <f:ajax execute="@this" render="listeProjetsForm detailsProjetPanel"/>
+                                    </h:commandButton>
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+
+                        <h:panelGroup rendered="#{empty projetEncadrantBean.projets}">
+                            <div class="empty-state">
+                                Aucun projet encadré pour le moment.
+                            </div>
+                        </h:panelGroup>
+                    </h:form>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup id="detailsProjetPanel" layout="block"
+                          rendered="#{projetEncadrantBean.selectedProjet != null}">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="card-title-icon">🔍</span>
+                            Détails du projet
+                        </h2>
+                    </div>
+
+                    <div class="section-grid">
+                        <div>
+                            <div class="info-item">
+                                <span class="info-label">Sujet</span>
+                                <span class="info-value">#{projetEncadrantBean.selectedProjet.sujet}</span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">Étudiant(e)</span>
+                                <span class="info-value">#{projetEncadrantBean.selectedProjet.etudiant.nomComplet}</span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">Date de début</span>
+                                <span class="info-value">#{projetEncadrantBean.formatDate(projetEncadrantBean.selectedProjet.dateDebut)}</span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">Date de fin</span>
+                                <span class="info-value">#{projetEncadrantBean.formatDate(projetEncadrantBean.selectedProjet.dateFin)}</span>
+                            </div>
+                        </div>
+
+                        <div class="encadrant-box">
+                            <div class="encadrant-header">
+                                <span class="card-title-icon">📌</span>
+                                <h3 class="encadrant-title">Statut actuel</h3>
+                            </div>
+
+                            <div class="status-bar">
+                                #{projetEncadrantBean.selectedProjet.statut.libelle}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top:20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-title-icon">✏️</span>
+                                Modifier le statut
+                            </h3>
+                        </div>
+
+                        <h:form id="statutForm">
+                            <div class="form-group">
+                                <label>Nouveau statut</label>
+                                <h:selectOneMenu value="#{projetEncadrantBean.nouveauStatut}" styleClass="form-control">
+                                    <f:selectItems value="#{projetEncadrantBean.allStatuts}"
+                                                   var="statut"
+                                                   itemValue="#{statut}"
+                                                   itemLabel="#{statut.libelle}" />
+                                </h:selectOneMenu>
+                            </div>
+
+                            <h:commandButton value="Mettre à jour"
+                                             action="#{projetEncadrantBean.changerStatut}"
+                                             styleClass="btn btn-primary">
+                                <f:ajax execute="@form" render=":detailsProjetPanel :listeProjetsForm"/>
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+
+                    <div class="card" style="margin-top:20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-title-icon">💬</span>
+                                Ajouter un commentaire
+                            </h3>
+                        </div>
+
+                        <h:form id="commentaireForm">
+                            <div class="form-group">
+                                <label>Commentaire</label>
+                                <h:inputTextarea value="#{projetEncadrantBean.nouveauCommentaire}"
+                                                 styleClass="form-control"/>
+                            </div>
+
+                            <h:commandButton value="Ajouter"
+                                             action="#{projetEncadrantBean.ajouterCommentaire}"
+                                             styleClass="btn btn-secondary">
+                                <f:ajax execute="@form" render=":detailsProjetPanel"/>
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+
+                    <div class="card" style="margin-top:20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-title-icon">🗨️</span>
+                                Commentaires
+                            </h3>
+                        </div>
+
+                        <h:dataTable value="#{projetEncadrantBean.commentaires}"
+                                     var="commentaire"
+                                     styleClass="data-table"
+                                     rendered="#{not empty projetEncadrantBean.commentaires}">
+                            <h:column>
+                                <f:facet name="header">Auteur</f:facet>
+                                #{commentaire.auteur.nomComplet}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Commentaire</f:facet>
+                                #{commentaire.contenu}
+                            </h:column>
+                        </h:dataTable>
+
+                        <h:panelGroup rendered="#{empty projetEncadrantBean.commentaires}">
+                            <div class="empty-state">
+                                Aucun commentaire.
+                            </div>
+                        </h:panelGroup>
+                    </div>
+
+                    <div class="card" style="margin-top:20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-title-icon">📎</span>
+                                Documents
+                            </h3>
+                        </div>
+
+                        <h:dataTable value="#{projetEncadrantBean.documents}"
+                                     var="document"
+                                     styleClass="data-table"
+                                     rendered="#{not empty projetEncadrantBean.documents}">
+                            <h:column>
+                                <f:facet name="header">Nom</f:facet>
+                                #{document.nom}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Type</f:facet>
+                                #{document.type}
+                            </h:column>
+                        </h:dataTable>
+
+                        <h:panelGroup rendered="#{empty projetEncadrantBean.documents}">
+                            <div class="empty-state">
+                                Aucun document.
+                            </div>
+                        </h:panelGroup>
+                    </div>
+
+                    <div style="margin-top:20px;">
+                        <h:form id="retourForm">
+                            <h:commandButton value="Retour à la liste"
+                                             action="#{projetEncadrantBean.retourListe}"
+                                             styleClass="btn btn-secondary">
+                                <f:ajax execute="@this" render=":detailsProjetPanel :listeProjetsForm"/>
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+
+                </div>
+            </h:panelGroup>
+
+        </main>
 
     </div>
 

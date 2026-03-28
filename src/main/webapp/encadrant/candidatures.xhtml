@@ -11,206 +11,252 @@
 
 <h:body>
 
-    <div class="navbar">
-        <div class="navbar-left">
-            <h:graphicImage library="images" name="logo.png" styleClass="logo"/>
-            <div class="app-info">
-                <div class="app-title">PFE Manager</div>
-                <div class="app-subtitle">Projets de Fin d'Études</div>
-            </div>
-        </div>
+    <div class="main-container">
 
-        <div class="navbar-center">
-            <h:link outcome="/test-module" styleClass="nav-link">🏠 Accueil</h:link>
-            <h:link outcome="/encadrant/candidatures" styleClass="nav-link active">📥 Candidatures Reçues</h:link>
-            <h:link outcome="/encadrant/suivi-projet" styleClass="nav-link">📁 Projets Encadrés</h:link>
-        </div>
-
-        <div class="navbar-right">
-            #{testModuleBean.currentUser.nomComplet}
-        </div>
-    </div>
-
-    <div class="content-wrapper">
-
-        <div class="page-title">📥 Candidatures Reçues</div>
-        <div class="page-subtitle">
-            Consultez et traitez les candidatures reçues pour vos sujets.
-        </div>
-
-        <h:messages styleClass="messages"
-                    infoClass="message message-info"
-                    errorClass="message message-error"/>
-
-        <div class="stats-container">
-            <div class="stat-box">
-                <div class="stat-value">#{candidatureEncadrantBean.candidaturesEnAttente}</div>
-                <div class="stat-label">En attente</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value">#{candidatureEncadrantBean.candidaturesTraitees}</div>
-                <div class="stat-label">Traitées</div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">📋 Liste des candidatures</h2>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h:graphicImage library="images" name="logo.png" styleClass="sidebar-logo-img"/>
+                <div class="sidebar-logo-title">PFE Manager</div>
+                <div class="sidebar-logo-subtitle">Projets de Fin d'Études</div>
             </div>
 
-            <h:form id="listeForm">
-                <h:dataTable value="#{candidatureEncadrantBean.candidatures}"
-                             var="candidature"
-                             styleClass="data-table"
-                             rendered="#{not empty candidatureEncadrantBean.candidatures}">
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar">
+                    #{testModuleBean.currentUser.nomComplet.substring(0,1)}
+                </div>
+                <div class="sidebar-user-info">
+                    <p class="sidebar-user-name">#{testModuleBean.currentUser.nomComplet}</p>
+                    <p class="sidebar-user-role">#{testModuleBean.currentUser.role.libelle}</p>
+                </div>
+            </div>
 
-                    <h:column>
-                        <f:facet name="header">Étudiant(e)</f:facet>
-                        #{candidature.etudiant.nomComplet}
-                    </h:column>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <h:link outcome="/test-module" styleClass="sidebar-nav-link">
+                        <span class="sidebar-nav-icon">🏠</span>
+                        Accueil
+                    </h:link>
+                </li>
 
-                    <h:column>
-                        <f:facet name="header">Sujet</f:facet>
-                        #{candidature.sujet}
-                    </h:column>
+                <li class="sidebar-nav-item">
+                    <h:link outcome="/encadrant/candidatures" styleClass="sidebar-nav-link active">
+                        <span class="sidebar-nav-icon">📥</span>
+                        Candidatures Reçues
+                    </h:link>
+                </li>
 
-                    <h:column>
-                        <f:facet name="header">Date</f:facet>
-                        #{candidatureEncadrantBean.formatDate(candidature.dateCandidature)}
-                    </h:column>
+                <li class="sidebar-nav-item">
+                    <h:link outcome="/encadrant/suivi-projet" styleClass="sidebar-nav-link">
+                        <span class="sidebar-nav-icon">📁</span>
+                        Projets Encadrés
+                    </h:link>
+                </li>
+            </ul>
 
-                    <h:column>
-                        <f:facet name="header">Statut</f:facet>
-                        <span class="badge #{candidatureEncadrantBean.getStatutClass(candidature.statut)}">
-                        #{candidature.statut.libelle}
-                    </span>
-                    </h:column>
+            <div class="sidebar-logout">
+                <h:form>
+                    <h:commandButton value="Se déconnecter"
+                                     action="#{testModuleBean.logout}"
+                                     styleClass="logout-btn"/>
+                </h:form>
+            </div>
+        </aside>
 
-                    <h:column>
-                        <f:facet name="header">Actions</f:facet>
-                        <div class="action-buttons">
-                            <h:commandButton value="Voir"
-                                             action="#{candidatureEncadrantBean.voirDetails(candidature)}"
-                                             styleClass="btn btn-primary btn-sm">
-                                <f:ajax execute="@this" render="listeForm detailsPanel traitementForm"/>
-                            </h:commandButton>
-                        </div>
-                    </h:column>
-                </h:dataTable>
+        <!-- MAIN CONTENT -->
+        <main class="content-wrapper">
 
-                <h:panelGroup rendered="#{empty candidatureEncadrantBean.candidatures}" layout="block">
-                    <div class="card">
-                        <p>Aucune candidature reçue.</p>
-                    </div>
-                </h:panelGroup>
-            </h:form>
-        </div>
+            <div class="content-header">
+                <h1>Candidatures Reçues</h1>
+                <p>Consultez et traitez les candidatures reçues pour vos sujets.</p>
+            </div>
 
-        <h:panelGroup id="detailsPanel" layout="block"
-                      rendered="#{candidatureEncadrantBean.selectedCandidature != null}">
+            <h:messages styleClass="messages"
+                        infoClass="message message-info"
+                        errorClass="message message-error"/>
+
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-value">#{candidatureEncadrantBean.candidaturesEnAttente}</div>
+                    <div class="stat-label">En attente</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">#{candidatureEncadrantBean.candidaturesTraitees}</div>
+                    <div class="stat-label">Traitées</div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">🔍 Détails de la candidature</h3>
+                    <h2 class="card-title">
+                        <span class="card-title-icon">📋</span>
+                        Liste des candidatures
+                    </h2>
                 </div>
 
-                <div class="section-grid">
-                    <div class="info-list">
-                        <div class="info-item">
-                            <span class="info-label">Étudiant(e)</span>
-                            <span class="info-value">#{candidatureEncadrantBean.selectedCandidature.etudiant.nomComplet}</span>
-                        </div>
+                <h:form id="listeForm">
+                    <h:dataTable value="#{candidatureEncadrantBean.candidatures}"
+                                 var="candidature"
+                                 styleClass="data-table"
+                                 rendered="#{not empty candidatureEncadrantBean.candidatures}">
 
-                        <div class="info-item">
-                            <span class="info-label">Email</span>
-                            <span class="info-value">#{candidatureEncadrantBean.selectedCandidature.etudiant.email}</span>
-                        </div>
+                        <h:column>
+                            <f:facet name="header">Étudiant(e)</f:facet>
+                            #{candidature.etudiant.nomComplet}
+                        </h:column>
 
-                        <div class="info-item">
-                            <span class="info-label">Sujet</span>
-                            <span class="info-value">#{candidatureEncadrantBean.selectedCandidature.sujet}</span>
-                        </div>
+                        <h:column>
+                            <f:facet name="header">Sujet</f:facet>
+                            #{candidature.sujet}
+                        </h:column>
 
-                        <div class="info-item">
-                            <span class="info-label">Date</span>
-                            <span class="info-value">
-                            #{candidatureEncadrantBean.formatDate(candidatureEncadrantBean.selectedCandidature.dateCandidature)}
-                        </span>
-                        </div>
+                        <h:column>
+                            <f:facet name="header">Date</f:facet>
+                            #{candidatureEncadrantBean.formatDate(candidature.dateCandidature)}
+                        </h:column>
 
-                        <div class="info-item">
-                            <span class="info-label">Statut</span>
-                            <span class="info-value">
-                            <span class="badge #{candidatureEncadrantBean.getStatutClass(candidatureEncadrantBean.selectedCandidature.statut)}">
-                                #{candidatureEncadrantBean.selectedCandidature.statut.libelle}
+                        <h:column>
+                            <f:facet name="header">Statut</f:facet>
+                            <span class="badge #{candidatureEncadrantBean.getStatutClass(candidature.statut)}">
+                                #{candidature.statut.libelle}
                             </span>
-                        </span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Actions</f:facet>
+                            <div class="btn-group">
+                                <h:commandButton value="Voir"
+                                                 action="#{candidatureEncadrantBean.voirDetails(candidature)}"
+                                                 styleClass="btn btn-primary btn-sm">
+                                    <f:ajax execute="@this" render="listeForm detailsPanel traitementForm"/>
+                                </h:commandButton>
+                            </div>
+                        </h:column>
+                    </h:dataTable>
+
+                    <h:panelGroup rendered="#{empty candidatureEncadrantBean.candidatures}" layout="block">
+                        <div class="empty-state">
+                            Aucune candidature reçue.
                         </div>
+                    </h:panelGroup>
+                </h:form>
+            </div>
+
+            <h:panelGroup id="detailsPanel" layout="block"
+                          rendered="#{candidatureEncadrantBean.selectedCandidature != null}">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="card-title-icon">🔍</span>
+                            Détails de la candidature
+                        </h2>
                     </div>
 
-                    <div class="highlight-box">
-                        <strong>💬 Message de motivation</strong>
-                        <p style="margin-top: 10px;">
-                            #{candidatureEncadrantBean.selectedCandidature.messageMotivation}
-                        </p>
-                    </div>
-                </div>
-
-                <h:panelGroup rendered="#{candidatureEncadrantBean.canTraiter(candidatureEncadrantBean.selectedCandidature)}"
-                              layout="block">
-                    <h:form id="traitementForm">
-                        <div style="margin-top: 20px;">
-                            <div class="form-group">
-                                <label class="form-label">Votre remarque</label>
-                                <h:inputTextarea value="#{candidatureEncadrantBean.remarque}"
-                                                 styleClass="form-control"/>
+                    <div class="section-grid">
+                        <div>
+                            <div class="info-item">
+                                <span class="info-label">Étudiant(e)</span>
+                                <span class="info-value">#{candidatureEncadrantBean.selectedCandidature.etudiant.nomComplet}</span>
                             </div>
 
-                            <div class="action-buttons">
-                                <h:commandButton value="Accepter"
-                                                 action="#{candidatureEncadrantBean.accepter}"
-                                                 styleClass="btn btn-success">
-                                    <f:ajax execute="@form" render=":listeForm :detailsPanel :traitementForm"/>
-                                </h:commandButton>
+                            <div class="info-item">
+                                <span class="info-label">Email</span>
+                                <span class="info-value">#{candidatureEncadrantBean.selectedCandidature.etudiant.email}</span>
+                            </div>
 
-                                <h:commandButton value="Refuser"
-                                                 action="#{candidatureEncadrantBean.refuser}"
-                                                 styleClass="btn btn-danger">
-                                    <f:ajax execute="@form" render=":listeForm :detailsPanel :traitementForm"/>
-                                </h:commandButton>
+                            <div class="info-item">
+                                <span class="info-label">Sujet</span>
+                                <span class="info-value">#{candidatureEncadrantBean.selectedCandidature.sujet}</span>
+                            </div>
 
-                                <h:commandButton value="Annuler"
+                            <div class="info-item">
+                                <span class="info-label">Date</span>
+                                <span class="info-value">
+                                    #{candidatureEncadrantBean.formatDate(candidatureEncadrantBean.selectedCandidature.dateCandidature)}
+                                </span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">Statut</span>
+                                <span class="info-value">
+                                    <span class="badge #{candidatureEncadrantBean.getStatutClass(candidatureEncadrantBean.selectedCandidature.statut)}">
+                                        #{candidatureEncadrantBean.selectedCandidature.statut.libelle}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="encadrant-box">
+                            <div class="encadrant-header">
+                                <span class="card-title-icon">💬</span>
+                                <h3 class="encadrant-title">Message de motivation</h3>
+                            </div>
+                            <p>#{candidatureEncadrantBean.selectedCandidature.messageMotivation}</p>
+                        </div>
+                    </div>
+
+                    <h:panelGroup rendered="#{candidatureEncadrantBean.canTraiter(candidatureEncadrantBean.selectedCandidature)}"
+                                  layout="block">
+                        <h:form id="traitementForm">
+                            <div style="margin-top: 20px;">
+                                <div class="form-group">
+                                    <label class="form-label">Votre remarque</label>
+                                    <h:inputTextarea value="#{candidatureEncadrantBean.remarque}"
+                                                     styleClass="form-control"/>
+                                </div>
+
+                                <div class="btn-group">
+                                    <h:commandButton value="Accepter"
+                                                     action="#{candidatureEncadrantBean.accepter}"
+                                                     styleClass="btn btn-success">
+                                        <f:ajax execute="@form" render=":listeForm :detailsPanel :traitementForm"/>
+                                    </h:commandButton>
+
+                                    <h:commandButton value="Refuser"
+                                                     action="#{candidatureEncadrantBean.refuser}"
+                                                     styleClass="btn btn-danger">
+                                        <f:ajax execute="@form" render=":listeForm :detailsPanel :traitementForm"/>
+                                    </h:commandButton>
+
+                                    <h:commandButton value="Annuler"
+                                                     action="#{candidatureEncadrantBean.annuler}"
+                                                     styleClass="btn btn-secondary"
+                                                     immediate="true">
+                                        <f:ajax execute="@this" render=":detailsPanel"/>
+                                    </h:commandButton>
+                                </div>
+                            </div>
+                        </h:form>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{!candidatureEncadrantBean.canTraiter(candidatureEncadrantBean.selectedCandidature)}"
+                                  layout="block">
+                        <div style="margin-top: 20px;">
+                            <h:panelGroup rendered="#{candidatureEncadrantBean.selectedCandidature.remarqueEncadrant != null}">
+                                <div class="encadrant-box">
+                                    <div class="encadrant-header">
+                                        <span class="card-title-icon">✍️</span>
+                                        <h3 class="encadrant-title">Remarque</h3>
+                                    </div>
+                                    <p>#{candidatureEncadrantBean.selectedCandidature.remarqueEncadrant}</p>
+                                </div>
+                            </h:panelGroup>
+
+                            <h:form id="closeForm">
+                                <h:commandButton value="Fermer"
                                                  action="#{candidatureEncadrantBean.annuler}"
                                                  styleClass="btn btn-secondary"
-                                                 immediate="true">
+                                                 style="margin-top: 15px;">
                                     <f:ajax execute="@this" render=":detailsPanel"/>
                                 </h:commandButton>
-                            </div>
+                            </h:form>
                         </div>
-                    </h:form>
-                </h:panelGroup>
+                    </h:panelGroup>
 
-                <h:panelGroup rendered="#{!candidatureEncadrantBean.canTraiter(candidatureEncadrantBean.selectedCandidature)}"
-                              layout="block">
-                    <div style="margin-top: 20px;">
-                        <h:panelGroup rendered="#{candidatureEncadrantBean.selectedCandidature.remarqueEncadrant != null}">
-                            <strong>✍️ Remarque</strong>
-                            <p style="margin-top: 10px;">
-                                #{candidatureEncadrantBean.selectedCandidature.remarqueEncadrant}
-                            </p>
-                        </h:panelGroup>
+                </div>
+            </h:panelGroup>
 
-                        <h:form id="closeForm">
-                            <h:commandButton value="Fermer"
-                                             action="#{candidatureEncadrantBean.annuler}"
-                                             styleClass="btn btn-secondary"
-                                             style="margin-top: 15px;">
-                                <f:ajax execute="@this" render=":detailsPanel"/>
-                            </h:commandButton>
-                        </h:form>
-                    </div>
-                </h:panelGroup>
-            </div>
-        </h:panelGroup>
+        </main>
 
     </div>
 

@@ -1,39 +1,56 @@
 package org.pfemanager.model;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * Classe représentant un document déposé dans le cadre d'un projet
- */
+@Entity
+@Table(name = "documents")
 public class Document implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "nom_fichier")
     private String nomFichier;
+
+    @Column(name = "type_fichier")
     private String typeFichier;
+
     private Long taille;
+
     private String chemin;
+
+    @Column(name = "date_depot")
     private LocalDateTime dateDepot;
+
+    @ManyToOne
+    @JoinColumn(name = "depositaire_id")
     private User depositaire;
+
+    @ManyToOne
+    @JoinColumn(name = "projet_id")
     private Projet projet;
 
-    // Constructeurs
     public Document() {
         this.dateDepot = LocalDateTime.now();
     }
 
-    public Document(Long id, String nomFichier, String typeFichier, User depositaire, Projet projet) {
-        this();
-        this.id = id;
-        this.nomFichier = nomFichier;
-        this.typeFichier = typeFichier;
-        this.depositaire = depositaire;
-        this.projet = projet;
+    @PrePersist
+    public void prePersist() {
+        if (dateDepot == null) {
+            dateDepot = LocalDateTime.now();
+        }
     }
 
-    // Getters et Setters
+    // =========================
+    // GETTERS & SETTERS
+    // =========================
+
     public Long getId() {
         return id;
     }
@@ -98,23 +115,20 @@ public class Document implements Serializable {
         this.projet = projet;
     }
 
-    /**
-     * Retourne la taille formatée pour l'affichage
-     */
-    public String getTailleFormatee() {
-        if (taille == null) {
-            return "0 B";
-        }
+    // =========================
+    // UTILE POUR AFFICHAGE
+    // =========================
 
-        if (taille < 1024) {
-            return taille + " B";
-        } else if (taille < 1024 * 1024) {
+    public String getTailleFormatee() {
+        if (taille == null) return "0 B";
+
+        if (taille < 1024) return taille + " B";
+        else if (taille < 1024 * 1024)
             return String.format("%.2f KB", taille / 1024.0);
-        } else if (taille < 1024 * 1024 * 1024) {
+        else if (taille < 1024 * 1024 * 1024)
             return String.format("%.2f MB", taille / (1024.0 * 1024.0));
-        } else {
+        else
             return String.format("%.2f GB", taille / (1024.0 * 1024.0 * 1024.0));
-        }
     }
 
     @Override
@@ -124,7 +138,7 @@ public class Document implements Serializable {
                 ", nomFichier='" + nomFichier + '\'' +
                 ", typeFichier='" + typeFichier + '\'' +
                 ", depositaire=" + (depositaire != null ? depositaire.getNomComplet() : "null") +
-                ", projet=" + (projet != null ? projet.getSujet(): "null") +
+                ", projet=" + (projet != null ? projet.getSujet() : "null") +
                 ", dateDepot=" + dateDepot +
                 '}';
     }

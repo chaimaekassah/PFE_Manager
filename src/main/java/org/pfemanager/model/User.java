@@ -1,28 +1,51 @@
 package org.pfemanager.model;
 
+import jakarta.persistence.*;
 import org.pfemanager.enums.Role;
 import org.pfemanager.enums.StatutUser;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * Classe représentant un utilisateur
- */
+@Entity
+@Table(name = "utilisateurs")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String nom;
+
+    @Column
     private String prenom;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(name = "mot_de_passe")
     private String motDePasse;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private StatutUser statut;
+
+    @Column(name = "date_creation")
     private LocalDateTime dateCreation;
+
+    @Column(name = "date_modification")
     private LocalDateTime dateModification;
 
-    // Constructeurs
+    @Column(name = "photo")
+    private String photo;
+
     public User() {
         this.dateCreation = LocalDateTime.now();
         this.statut = StatutUser.ACTIF;
@@ -37,7 +60,6 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    // Getters et Setters
     public Long getId() {
         return id;
     }
@@ -110,9 +132,39 @@ public class User implements Serializable {
         this.dateModification = dateModification;
     }
 
-    // Méthode utilitaire
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
     public String getNomComplet() {
-        return prenom + " " + nom;
+        String p = prenom == null ? "" : prenom;
+        String n = nom == null ? "" : nom;
+        return (p + " " + n).trim();
+    }
+
+    public String getPhotoOuDefaut() {
+        return (photo != null && !photo.isEmpty())
+                ? photo
+                : "resources/images/default-avatar.png";
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (dateCreation == null) {
+            dateCreation = LocalDateTime.now();
+        }
+        if (statut == null) {
+            statut = StatutUser.ACTIF;
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        dateModification = LocalDateTime.now();
     }
 
     @Override

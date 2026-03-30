@@ -1,19 +1,16 @@
 package org.pfemanager.controller;
 
+import org.pfemanager.enums.Role;
 import org.pfemanager.model.User;
 import org.pfemanager.service.UserService;
-import org.pfemanager.enums.Role;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import java.util.List;
 
-/**
- * Bean de test pour simuler une session utilisateur
- * Permet de naviguer entre les différentes pages sans authentification
- */
 @Named("testModuleBean")
 @SessionScoped
 public class TestModuleBean implements Serializable {
@@ -28,12 +25,11 @@ public class TestModuleBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        // Par défaut, se connecter en tant qu'étudiante Amal Benali
-        currentUser = userService.findById(2L).orElse(null);
-        selectedUserId = 2L;
+        // Par défaut : premier étudiant trouvé
+        currentUser = findFirstByRole(Role.ETUDIANT);
+        selectedUserId = currentUser != null ? currentUser.getId() : null;
     }
 
-    // Simuler la connexion avec un utilisateur spécifique
     public String login() {
         if (selectedUserId != null) {
             currentUser = userService.findById(selectedUserId).orElse(null);
@@ -41,35 +37,30 @@ public class TestModuleBean implements Serializable {
         return "test-module?faces-redirect=true";
     }
 
-    // Connexion rapide en tant qu'étudiant
     public String loginAsEtudiant() {
-        currentUser = userService.findById(2L).orElse(null); // Amal Benali
-        selectedUserId = 2L;
+        currentUser = findFirstByRole(Role.ETUDIANT);
+        selectedUserId = currentUser != null ? currentUser.getId() : null;
         return "test-module?faces-redirect=true";
     }
 
-    // Connexion rapide en tant qu'encadrant
     public String loginAsEncadrant() {
-        currentUser = userService.findById(5L).orElse(null); // Samira Tazi
-        selectedUserId = 5L;
+        currentUser = findFirstByRole(Role.ENCADRANT);
+        selectedUserId = currentUser != null ? currentUser.getId() : null;
         return "test-module?faces-redirect=true";
     }
 
-    // Connexion rapide en tant qu'admin
     public String loginAsAdmin() {
-        currentUser = userService.findById(1L).orElse(null); // Fatima Alami
-        selectedUserId = 1L;
+        currentUser = findFirstByRole(Role.ADMIN);
+        selectedUserId = currentUser != null ? currentUser.getId() : null;
         return "test-module?faces-redirect=true";
     }
 
-    // Déconnexion
     public String logout() {
         currentUser = null;
         selectedUserId = null;
         return "test-module?faces-redirect=true";
     }
 
-    // Vérifications de rôle
     public boolean isEtudiant() {
         return currentUser != null && currentUser.getRole() == Role.ETUDIANT;
     }
@@ -86,7 +77,14 @@ public class TestModuleBean implements Serializable {
         return currentUser != null;
     }
 
-    // Getters et Setters
+    private User findFirstByRole(Role role) {
+        List<User> users = userService.getAllUsers();
+        return users.stream()
+                .filter(u -> u.getRole() == role)
+                .findFirst()
+                .orElse(null);
+    }
+
     public User getCurrentUser() {
         return currentUser;
     }

@@ -1,5 +1,6 @@
 package org.pfemanager.controller;
 
+import org.pfemanager.enums.StatutUser;
 import org.pfemanager.model.User;
 import org.pfemanager.service.UserService;
 
@@ -9,12 +10,10 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * Bean pour la gestion des utilisateurs par l'administrateur
- */
 @Named("adminUserBean")
 @ViewScoped
 public class AdminUserBean implements Serializable {
@@ -36,7 +35,6 @@ public class AdminUserBean implements Serializable {
         users = userService.getAllUsers();
     }
 
-    // Rechercher
     public void search() {
         if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
             users = userService.search(searchKeyword);
@@ -45,38 +43,36 @@ public class AdminUserBean implements Serializable {
         }
     }
 
-    // Réinitialiser la recherche
     public void resetSearch() {
         searchKeyword = null;
         loadUsers();
     }
 
-    // Activer/Désactiver un utilisateur
     public void toggleStatut(Long userId) {
         userService.toggleStatut(userId);
         addMessage(FacesMessage.SEVERITY_INFO, "Statut modifié");
         loadUsers();
     }
 
-    // Supprimer logiquement un utilisateur
     public void delete(Long userId) {
         userService.delete(userId);
         addMessage(FacesMessage.SEVERITY_INFO, "Utilisateur supprimé");
         loadUsers();
     }
 
-    // Navigation vers la page d'ajout
     public String goToAdd() {
         return "ajouter-utilisateur?faces-redirect=true";
     }
 
-    // Navigation vers la page de modification
     public String goToEdit(Long userId) {
         return "modifier-utilisateur?faces-redirect=true&userId=" + userId;
     }
 
-    // Classe CSS selon le statut
     public String getStatutClass(User user) {
+        if (user == null || user.getStatut() == null) {
+            return "";
+        }
+
         switch (user.getStatut()) {
             case ACTIF:
                 return "statut-actif";
@@ -89,8 +85,11 @@ public class AdminUserBean implements Serializable {
         }
     }
 
-    // Classe CSS selon le rôle
     public String getRoleClass(User user) {
+        if (user == null || user.getRole() == null) {
+            return "";
+        }
+
         switch (user.getRole()) {
             case ETUDIANT:
                 return "role-etudiant";
@@ -103,24 +102,26 @@ public class AdminUserBean implements Serializable {
         }
     }
 
-    // Statistiques
     public long getTotalUsers() {
         return users != null ? users.size() : 0;
     }
 
     public long getActifUsers() {
-        if (users == null) return 0;
+        if (users == null) {
+            return 0;
+        }
         return users.stream()
-                .filter(u -> u.getStatut().name().equals("ACTIF"))
+                .filter(u -> u.getStatut() == StatutUser.ACTIF)
                 .count();
     }
 
     private void addMessage(FacesMessage.Severity severity, String message) {
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(severity, message, null));
+        FacesContext.getCurrentInstance().addMessage(
+                null,
+                new FacesMessage(severity, message, null)
+        );
     }
 
-    // Getters et Setters
     public List<User> getUsers() {
         return users;
     }

@@ -1,6 +1,8 @@
 package org.pfemanager.model;
 
+import jakarta.persistence.*;
 import org.pfemanager.enums.StatutProjet;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,22 +11,46 @@ import java.util.List;
 /**
  * Classe représentant un projet de fin d'études
  */
+@Entity
+@Table(name = "projets")
 public class Projet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String sujet;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "etudiant_id")
     private User etudiant;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "encadrant_id")
     private User encadrant;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private StatutProjet statut;
+
+    @Column(name = "date_debut")
     private LocalDateTime dateDebut;
+
+    @Column(name = "date_fin")
     private LocalDateTime dateFin;
+
+    @Transient
     private List<Commentaire> commentaires;
+
+    @Transient
     private List<Document> documents;
 
-    // Constructeurs
     public Projet() {
         this.dateDebut = LocalDateTime.now();
         this.statut = StatutProjet.EN_COURS;
@@ -41,7 +67,22 @@ public class Projet implements Serializable {
         this.encadrant = encadrant;
     }
 
-    // Getters et Setters
+    @PrePersist
+    public void prePersist() {
+        if (dateDebut == null) {
+            dateDebut = LocalDateTime.now();
+        }
+        if (statut == null) {
+            statut = StatutProjet.EN_COURS;
+        }
+        if (commentaires == null) {
+            commentaires = new ArrayList<>();
+        }
+        if (documents == null) {
+            documents = new ArrayList<>();
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -107,6 +148,9 @@ public class Projet implements Serializable {
     }
 
     public List<Commentaire> getCommentaires() {
+        if (commentaires == null) {
+            commentaires = new ArrayList<>();
+        }
         return commentaires;
     }
 
@@ -115,6 +159,9 @@ public class Projet implements Serializable {
     }
 
     public List<Document> getDocuments() {
+        if (documents == null) {
+            documents = new ArrayList<>();
+        }
         return documents;
     }
 
@@ -122,13 +169,12 @@ public class Projet implements Serializable {
         this.documents = documents;
     }
 
-    // Méthodes utilitaires
     public void ajouterCommentaire(Commentaire commentaire) {
-        this.commentaires.add(commentaire);
+        getCommentaires().add(commentaire);
     }
 
     public void ajouterDocument(Document document) {
-        this.documents.add(document);
+        getDocuments().add(document);
     }
 
     @Override
@@ -141,5 +187,4 @@ public class Projet implements Serializable {
                 ", statut=" + statut +
                 '}';
     }
-
 }

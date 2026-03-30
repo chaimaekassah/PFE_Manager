@@ -1,27 +1,51 @@
 package org.pfemanager.model;
 
+import jakarta.persistence.*;
 import org.pfemanager.enums.StatutCandidature;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * Classe représentant une candidature d'étudiant(e) à un projet
  */
+@Entity
+@Table(name = "candidatures")
 public class Candidature implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "etudiant_id")
     private User etudiant;
+
+    @ManyToOne
+    @JoinColumn(name = "encadrant_id")
     private User encadrant;
+
+    @Column(nullable = false)
     private String sujet;
+
+    @Column(name = "message_motivation")
     private String messageMotivation;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private StatutCandidature statut;
+
+    @Column(name = "remarque_encadrant")
     private String remarqueEncadrant;
+
+    @Column(name = "date_candidature")
     private LocalDateTime dateCandidature;
+
+    @Column(name = "date_reponse")
     private LocalDateTime dateReponse;
 
-    // Constructeurs
     public Candidature() {
         this.dateCandidature = LocalDateTime.now();
         this.statut = StatutCandidature.EN_ATTENTE;
@@ -36,7 +60,16 @@ public class Candidature implements Serializable {
         this.messageMotivation = messageMotivation;
     }
 
-    // Getters et Setters
+    @PrePersist
+    public void prePersist() {
+        if (dateCandidature == null) {
+            dateCandidature = LocalDateTime.now();
+        }
+        if (statut == null) {
+            statut = StatutCandidature.EN_ATTENTE;
+        }
+    }
+
     public Long getId() {
         return id;
     }

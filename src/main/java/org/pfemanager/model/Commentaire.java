@@ -1,33 +1,45 @@
 package org.pfemanager.model;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * Classe représentant un commentaire sur un projet
- */
+@Entity
+@Table(name = "commentaires")
 public class Commentaire implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "auteur_id")
     private User auteur;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String contenu;
+
+    @Column(name = "date_creation")
     private LocalDateTime dateCreation;
+
+    @ManyToOne
+    @JoinColumn(name = "projet_id")
     private Projet projet;
 
-    // Constructeurs
     public Commentaire() {
         this.dateCreation = LocalDateTime.now();
     }
 
-    public Commentaire(Long id, User auteur, String contenu, Projet projet) {
-        this();
-        this.id = id;
-        this.auteur = auteur;
-        this.contenu = contenu;
-        this.projet = projet;
+    @PrePersist
+    public void prePersist() {
+        if (dateCreation == null) {
+            dateCreation = LocalDateTime.now();
+        }
     }
+
 
     // Getters et Setters
     public Long getId() {

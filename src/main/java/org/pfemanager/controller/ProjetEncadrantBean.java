@@ -1,11 +1,11 @@
 package org.pfemanager.controller;
 
-import org.pfemanager.model.Projet;
+import org.pfemanager.enums.StatutProjet;
 import org.pfemanager.model.Commentaire;
 import org.pfemanager.model.Document;
-import org.pfemanager.service.ProjetService;
+import org.pfemanager.model.Projet;
 import org.pfemanager.service.DocumentService;
-import org.pfemanager.enums.StatutProjet;
+import org.pfemanager.service.ProjetService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -75,8 +75,11 @@ public class ProjetEncadrantBean implements Serializable {
         if (selectedProjet != null && nouveauStatut != null) {
             projetService.changerStatut(selectedProjet.getId(), nouveauStatut);
             addMessage(FacesMessage.SEVERITY_INFO, "Statut modifié avec succès");
+
             loadProjets();
             loadDetailsProjet();
+
+            selectedProjet = projetService.findById(selectedProjet.getId()).orElse(selectedProjet);
         }
     }
 
@@ -105,14 +108,18 @@ public class ProjetEncadrantBean implements Serializable {
     }
 
     public long getProjetsEnCours() {
-        if (projets == null) return 0;
+        if (projets == null) {
+            return 0;
+        }
         return projets.stream()
                 .filter(p -> p.getStatut() == StatutProjet.EN_COURS)
                 .count();
     }
 
     public String getStatutClass(StatutProjet statut) {
-        if (statut == null) return "";
+        if (statut == null) {
+            return "";
+        }
 
         switch (statut) {
             case EN_COURS:
@@ -131,7 +138,9 @@ public class ProjetEncadrantBean implements Serializable {
     }
 
     public String formatDate(LocalDateTime date) {
-        if (date == null) return "";
+        if (date == null) {
+            return "";
+        }
         return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
 

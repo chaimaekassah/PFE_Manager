@@ -5,17 +5,18 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 <h:head>
     <title>PFE Manager – Dashboard</title>
-    <h:outputStylesheet name="css/style.css"/>
-    <h:outputStylesheet name="css/dashboard.css"/>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <h:outputStylesheet library="css" name="dashboard.css"/>
 </h:head>
 <h:body style="margin: 0; padding: 0; display: block !important;">
     <div class="app-layout" style="align-items: flex-start !important; display: flex !important;">
+
         <ui:include src="/WEB-INF/templates/sidebar.xhtml">
             <ui:param name="rolePrefix" value="admin"/>
             <ui:param name="currentPage" value="dashboard"/>
         </ui:include>
 
-        <main class="main-content" style="margin-top: 0 !important; padding-top: 32px !important; display: block !important;">
+        <main class="main-content" style="margin-top: 0 !important; padding-top: 32px !important; display: block !important; flex: 1;">
             <div style="margin-bottom: 28px;">
                 <h1 class="page-title">Tableau de Bord Administrateur</h1>
                 <p class="page-subtitle">Bienvenue, #{authBean.utilisateurConnecte.nom}. Voici l'état du système.</p>
@@ -29,6 +30,7 @@
                         <div style="font-size: 24px; font-weight: 700; color: #1e3a8a;">#{adminStatsBean.totalEtudiants}</div>
                     </div>
                 </div>
+
                 <div class="stat-card" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px;">
                     <div style="font-size: 32px; background: #fef3c7; padding: 10px; border-radius: 10px;">📁</div>
                     <div>
@@ -36,6 +38,7 @@
                         <div style="font-size: 24px; font-weight: 700; color: #1e3a8a;">#{adminStatsBean.totalSujets}</div>
                     </div>
                 </div>
+
                 <div class="stat-card" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px;">
                     <div style="font-size: 32px; background: #d1fae5; padding: 10px; border-radius: 10px;">✅</div>
                     <div>
@@ -48,10 +51,14 @@
             <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
                 <h3 style="margin-bottom: 20px; color: #1e3a8a;">Actions de gestion</h3>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <a href="#{request.contextPath}/admin/sujets.xhtml"
-                       class="btn-outline" style="text-decoration:none; padding:12px 20px; border-radius:8px;">
+                    <h:link outcome="/admin/sujets" includeViewParams="true"
+                            style="text-decoration:none; padding:12px 20px; border-radius:8px; background: #1e3a8a; color: white;">
                         📑 Voir les sujets
-                    </a>
+                    </h:link>
+                    <h:link outcome="/admin/utilisateurs" includeViewParams="true"
+                            style="text-decoration:none; padding:12px 20px; border-radius:8px; border: 1px solid #1e3a8a; color: #1e3a8a;">
+                        👥 Gérer les utilisateurs
+                    </h:link>
                 </div>
             </div>
         </main>

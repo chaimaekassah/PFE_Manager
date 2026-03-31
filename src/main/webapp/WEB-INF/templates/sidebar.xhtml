@@ -33,15 +33,45 @@
                class="sidebar-link #{currentPage == 'dashboard' ? 'active' : ''}">
                 <span class="sidebar-icon">🏠</span> Dashboard
             </a>
+
             <a href="#{request.contextPath}/#{rolePrefix}/profil.xhtml"
                class="sidebar-link #{currentPage == 'profil' ? 'active' : ''}">
                 <span class="sidebar-icon">👤</span> Mon Profil
             </a>
-            <!-- Sujets visible pour TOUS les rôles -->
+
             <a href="#{request.contextPath}/#{rolePrefix}/sujets.xhtml"
                class="sidebar-link #{currentPage == 'sujets' ? 'active' : ''}">
                 <span class="sidebar-icon">📋</span> Sujets
             </a>
+
+            <h:panelGroup rendered="#{authBean.utilisateurConnecte.role == 'ENCADRANT'}">
+                <a href="#{request.contextPath}/encadrant/candidatures.xhtml"
+                   class="sidebar-link #{currentPage == 'candidatures' ? 'active' : ''}">
+                    <span class="sidebar-icon">📩</span> Candidatures Reçues
+                </a>
+                <a href="#{request.contextPath}/encadrant/suivi-projet.xhtml"
+                   class="sidebar-link #{currentPage == 'suivi' ? 'active' : ''}">
+                    <span class="sidebar-icon">📈</span> Suivi des Projets
+                </a>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{authBean.utilisateurConnecte.role == 'ETUDIANT'}">
+                <a href="#{request.contextPath}/etudiant/candidatures.xhtml"
+                   class="sidebar-link #{currentPage == 'candidatures' ? 'active' : ''}">
+                    <span class="sidebar-icon">📝</span> Mes Candidatures
+                </a>
+                <a href="#{request.contextPath}/etudiant/suivi-projet.xhtml"
+                   class="sidebar-link #{currentPage == 'suivi' ? 'active' : ''}">
+                    <span class="sidebar-icon">🚀</span> Mon Projet Affecté
+                </a>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{authBean.utilisateurConnecte.role == 'ADMINISTRATEUR'}">
+                <a href="#{request.contextPath}/admin/utilisateurs.xhtml"
+                   class="sidebar-link #{currentPage == 'utilisateurs' ? 'active' : ''}">
+                    <span class="sidebar-icon">👥</span> Gérer Utilisateurs
+                </a>
+            </h:panelGroup>
         </nav>
 
         <!-- Logout -->

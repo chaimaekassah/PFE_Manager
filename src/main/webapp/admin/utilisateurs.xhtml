@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:define name="title">Gestion des Utilisateurs - PFE Manager</ui:define>
+
+    <ui:define name="content">
+        <div class="content-header">
+            <h1>Gestion des Utilisateurs</h1>
+            <p>Gérez les comptes utilisateurs de la plateforme.</p>
+        </div>
+
+        <h:messages styleClass="messages"
+                    infoClass="message message-info"
+                    errorClass="message message-error"/>
+
+        <!-- Statistiques -->
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-value">#{adminUserBean.totalUsers}</div>
+                <div class="stat-label">Total utilisateurs</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">#{adminUserBean.actifUsers}</div>
+                <div class="stat-label">Actifs</div>
+            </div>
+        </div>
+
+        <!-- Formulaire unique englobant recherche + tableau -->
+        <h:form id="mainForm">
+            <!-- Barre de recherche -->
+            <div class="card">
+                <div class="flex-between" style="margin-bottom: 20px;">
+                    <div class="search-box" style="flex: 1; margin-right: 15px; display: flex; gap: 10px;">
+                        <h:inputText value="#{adminUserBean.searchKeyword}"
+                                     styleClass="form-control"
+                                     placeholder="Rechercher par nom, prénom ou email..."/>
+                        <h:commandButton value="🔍 Rechercher"
+                                         action="#{adminUserBean.search}"
+                                         styleClass="btn btn-primary">
+                            <f:ajax execute="@form" render="@form"/>
+                        </h:commandButton>
+                        <h:commandButton value="🔄 Réinitialiser"
+                                         action="#{adminUserBean.resetSearch}"
+                                         styleClass="btn btn-secondary">
+                            <f:ajax execute="@this" render="@form"/>
+                        </h:commandButton>
+                    </div>
+
+                    <h:commandButton value="➕ Nouvel utilisateur"
+                                     action="#{adminUserBean.goToAdd}"
+                                     styleClass="btn btn-success"/>
+                </div>
+            </div>
+
+            <!-- Tableau des utilisateurs -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="card-title-icon">👥</span>
+                        Liste des utilisateurs
+                    </h2>
+                </div>
+
+                <h:dataTable value="#{adminUserBean.users}"
+                             var="user"
+                             styleClass="data-table"
+                             rendered="#{not empty adminUserBean.users}">
+
+                    <h:column>
+                        <f:facet name="header">Nom</f:facet>
+                        #{user.nom}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Prénom</f:facet>
+                        #{user.prenom}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Email</f:facet>
+                        #{user.email}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Rôle</f:facet>
+                        <span class="badge #{adminUserBean.getRoleClass(user)}">
+                            #{user.role.libelle}
+                        </span>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Statut</f:facet>
+                        <span class="badge #{adminUserBean.getStatutClass(user)}">
+                            #{user.statut.libelle}
+                        </span>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <div class="btn-group">
+                            <h:commandButton value="✏️ Modifier"
+                                             action="#{adminUserBean.goToEdit(user.id)}"
+                                             styleClass="btn btn-primary btn-sm"/>
+
+                            <h:commandButton value="🔄 Activer/Désactiver"
+                                             action="#{adminUserBean.toggleStatut(user.id)}"
+                                             styleClass="btn btn-warning btn-sm">
+                                <f:ajax execute="@this" render="@form"/>
+                            </h:commandButton>
+
+                            <h:commandButton value="🗑️ Supprimer"
+                                             action="#{adminUserBean.delete(user.id)}"
+                                             styleClass="btn btn-danger btn-sm"
+                                             onclick="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+                                <f:ajax execute="@this" render="@form"/>
+                            </h:commandButton>
+                        </div>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty adminUserBean.users}">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👤</div>
+                        <p class="empty-state-text">Aucun utilisateur trouvé</p>
+                    </div>
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

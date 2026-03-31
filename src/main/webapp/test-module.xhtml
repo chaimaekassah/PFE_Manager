@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+<h:head>
+    <title>PFE Manager</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+
+    <div class="main-container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h:graphicImage library="images" name="logo.png" styleClass="sidebar-logo-img"/>
+                <div class="sidebar-logo-title">PFE Manager</div>
+                <div class="sidebar-logo-subtitle">Projets de Fin d'Études</div>
+            </div>
+
+            <h:panelGroup rendered="#{testModuleBean.loggedIn}">
+                <div class="sidebar-user">
+                    <div class="sidebar-user-avatar">
+                        #{testModuleBean.currentUser.nomComplet.substring(0,1)}
+                    </div>
+                    <div class="sidebar-user-info">
+                        <p class="sidebar-user-name">#{testModuleBean.currentUser.nomComplet}</p>
+                        <p class="sidebar-user-role">#{testModuleBean.currentUser.role.libelle}</p>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <h:link outcome="/test-module" styleClass="sidebar-nav-link active">
+                        <span class="sidebar-nav-icon">🏠</span>
+                        Accueil
+                    </h:link>
+                </li>
+
+                <!-- Espace étudiante -->
+                <h:panelGroup rendered="#{testModuleBean.etudiant}">
+                    <li class="sidebar-nav-item">
+                        <h:link outcome="/etudiant/candidatures" styleClass="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">📝</span>
+                            Mes Candidatures
+                        </h:link>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <h:link outcome="/etudiant/suivi-projet" styleClass="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">📊</span>
+                            Suivi du Projet
+                        </h:link>
+                    </li>
+                </h:panelGroup>
+
+                <!-- Espace encadrante -->
+                <h:panelGroup rendered="#{testModuleBean.encadrant}">
+                    <li class="sidebar-nav-item">
+                        <h:link outcome="/encadrant/candidatures" styleClass="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">📥</span>
+                            Candidatures Reçues
+                        </h:link>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <h:link outcome="/encadrant/suivi-projet" styleClass="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">📁</span>
+                            Projets Encadrés
+                        </h:link>
+                    </li>
+                </h:panelGroup>
+
+                <!-- Espace admin -->
+                <h:panelGroup rendered="#{testModuleBean.admin}">
+                    <li class="sidebar-nav-item">
+                        <h:link outcome="/admin/utilisateurs" styleClass="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">👥</span>
+                            Gestion des Utilisateurs
+                        </h:link>
+                    </li>
+                </h:panelGroup>
+            </ul>
+
+            <h:panelGroup rendered="#{testModuleBean.loggedIn}">
+                <div class="sidebar-logout">
+                    <h:form>
+                        <h:commandButton value="Se déconnecter"
+                                         action="#{testModuleBean.logout}"
+                                         styleClass="logout-btn"/>
+                    </h:form>
+                </div>
+            </h:panelGroup>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="content-wrapper">
+
+            <div class="content-header">
+                <h1>Accueil</h1>
+                <p>Bienvenue sur votre espace de navigation PFE Manager.</p>
+            </div>
+
+            <!-- Choix du profil -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="card-title-icon">🔐</span>
+                        Changer de profil
+                    </h2>
+                </div>
+
+                <h:form>
+                    <div class="btn-group">
+                        <h:commandButton value="Connexion Étudiante"
+                                         action="#{testModuleBean.loginAsEtudiant}"
+                                         styleClass="btn btn-primary"/>
+
+                        <h:commandButton value="Connexion Encadrante"
+                                         action="#{testModuleBean.loginAsEncadrant}"
+                                         styleClass="btn btn-secondary"/>
+
+                        <h:commandButton value="Connexion Admin"
+                                         action="#{testModuleBean.loginAsAdmin}"
+                                         styleClass="btn btn-danger"/>
+                    </div>
+                </h:form>
+            </div>
+
+            <!-- Navigation selon profil -->
+            <h:panelGroup rendered="#{testModuleBean.loggedIn}">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="card-title-icon">📋</span>
+                            Navigation
+                        </h2>
+                    </div>
+
+                    <p style="margin-bottom: 20px;">
+                        Connectée en tant que :
+                        <strong>#{testModuleBean.currentUser.nomComplet}</strong>
+                        (#{testModuleBean.currentUser.role.libelle})
+                    </p>
+
+                    <h:panelGroup rendered="#{testModuleBean.etudiant}">
+                        <div class="page-section">
+                            <h3 style="color:#1a3a5c; margin-bottom: 12px;">Espace Étudiante</h3>
+                            <div class="btn-group">
+                                <h:link outcome="/etudiant/candidatures" styleClass="btn btn-primary">
+                                    Mes Candidatures
+                                </h:link>
+                                <h:link outcome="/etudiant/suivi-projet" styleClass="btn btn-secondary">
+                                    Suivi de mon Projet
+                                </h:link>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{testModuleBean.encadrant}">
+                        <div class="page-section">
+                            <h3 style="color:#1a3a5c; margin-bottom: 12px;">Espace Encadrante</h3>
+                            <div class="btn-group">
+                                <h:link outcome="/encadrant/candidatures" styleClass="btn btn-primary">
+                                    Candidatures Reçues
+                                </h:link>
+                                <h:link outcome="/encadrant/suivi-projet" styleClass="btn btn-secondary">
+                                    Projets Encadrés
+                                </h:link>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{testModuleBean.admin}">
+                        <div class="page-section">
+                            <h3 style="color:#1a3a5c; margin-bottom: 12px;">Espace Administratrice</h3>
+                            <div class="btn-group">
+                                <h:link outcome="/admin/utilisateurs" styleClass="btn btn-primary">
+                                    Gestion des Utilisateurs
+                                </h:link>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </h:panelGroup>
+
+        </main>
+
+    </div>
+
+</h:body>
+</html>

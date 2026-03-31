@@ -5,7 +5,7 @@
 
         <class>org.pfemanager.model.Utilisateur</class>
         <class>org.pfemanager.model.Sujet</class>
-<!--        <class>org.pfemanager.model.Candidature</class>-->
+        <class>org.pfemanager.model.Candidature</class>
 
         <properties>
             <property name="hibernate.dialect"

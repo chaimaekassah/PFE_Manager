@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>PFE Manager</title>
+    <h:outputStylesheet library="css" name="style.css" />
+    <h:outputStylesheet library="css" name="dashboard.css" />
+    <h:outputStylesheet library="css" name="sujets.css" />
+</h:head>
+
+<h:body>
+    <div class="app-container">
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml" />
+
+        <main class="main-content">
+            <ui:insert name="content" />
+        </main>
+    </div>
+</h:body>
+</html>

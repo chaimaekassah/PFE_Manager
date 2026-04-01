@@ -1,0 +1,67 @@
+﻿On branch feature/dashboards
+Your branch is up to date with 'origin/feature/dashboards'.
+
+All conflicts fixed but you are still merging.
+  (use "git commit" to conclude merge)
+
+Changes to be committed:
+	new file:   .idea/data_source_mapping.xml
+	new file:   .idea/sqldialects.xml
+	new file:   .idea/webContexts.xml
+	modified:   pom.xml
+	new file:   src/main/java/org/pfemanager/controller/AdminUserBean.java
+	new file:   src/main/java/org/pfemanager/controller/AdminUserFormBean.java
+	new file:   src/main/java/org/pfemanager/controller/CandidatureEncadrantBean.java
+	new file:   src/main/java/org/pfemanager/controller/CandidatureEtudiantBean.java
+	new file:   src/main/java/org/pfemanager/controller/ProjetEncadrantBean.java
+	new file:   src/main/java/org/pfemanager/controller/ProjetEtudiantBean.java
+	new file:   src/main/java/org/pfemanager/controller/TestModuleBean.java
+	modified:   src/main/java/org/pfemanager/db/script.sql
+	new file:   src/main/java/org/pfemanager/enums/Role.java
+	new file:   src/main/java/org/pfemanager/enums/StatutCandidature.java
+	new file:   src/main/java/org/pfemanager/enums/StatutProjet.java
+	new file:   src/main/java/org/pfemanager/enums/StatutUser.java
+	new file:   src/main/java/org/pfemanager/model/Candidature.java
+	new file:   src/main/java/org/pfemanager/model/Commentaire.java
+	new file:   src/main/java/org/pfemanager/model/Document.java
+	new file:   src/main/java/org/pfemanager/model/Projet.java
+	new file:   src/main/java/org/pfemanager/model/User.java
+	new file:   src/main/java/org/pfemanager/service/CandidatureService.java
+	new file:   src/main/java/org/pfemanager/service/DocumentService.java
+	new file:   src/main/java/org/pfemanager/service/ProjetService.java
+	new file:   src/main/java/org/pfemanager/service/UserService.java
+	new file:   src/main/webapp/admin/ajouter-utilisateur.xhtml
+	new file:   src/main/webapp/admin/modifier-utilisateur.xhtml
+	new file:   src/main/webapp/admin/utilisateurs.xhtml
+	new file:   src/main/webapp/encadrant/candidatures.xhtml
+	new file:   src/main/webapp/encadrant/suivi-projet.xhtml
+	new file:   src/main/webapp/etudiant/candidatures.xhtml
+	new file:   src/main/webapp/etudiant/suivi-projet.xhtml
+	deleted:    src/main/webapp/index.jsp
+	new file:   src/main/webapp/test-module.xhtml
+	deleted:    src/main/webapp/test.xhtml
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	deleted:    .idea/data_source_mapping.xml
+	modified:   .idea/vcs.xml
+	modified:   pom.xml
+	modified:   src/main/java/org/pfemanager/controller/AdminUserBean.java
+	modified:   src/main/java/org/pfemanager/controller/AdminUserFormBean.java
+	modified:   src/main/java/org/pfemanager/controller/TestModuleBean.java
+	modified:   src/main/java/org/pfemanager/enums/Role.java
+	modified:   src/main/java/org/pfemanager/service/UserService.java
+	modified:   src/main/resources/META-INF/persistence.xml
+	modified:   src/main/webapp/WEB-INF/templates/sidebar.xhtml
+	modified:   src/main/webapp/WEB-INF/web.xml
+	modified:   src/main/webapp/admin/ajouter-utilisateur.xhtml
+	modified:   src/main/webapp/admin/dashboard.xhtml
+	modified:   src/main/webapp/admin/modifier-utilisateur.xhtml
+	modified:   src/main/webapp/admin/utilisateurs.xhtml
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.git-status.txt
+	src/main/webapp/WEB-INF/templates/layout.xhtml
+

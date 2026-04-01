@@ -3,12 +3,14 @@ package org.pfemanager.model;
 import jakarta.persistence.*;
 import org.pfemanager.enums.Role;
 import org.pfemanager.enums.StatutUser;
+import org.pfemanager.util.PasswordUtil;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "utilisateurs")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,8 +28,8 @@ public class User implements Serializable {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "mot_de_passe")
-    private String motDePasse;
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -37,7 +39,7 @@ public class User implements Serializable {
     @Column(nullable = false)
     private StatutUser statut;
 
-    @Column(name = "date_creation")
+    @Column(name = "date_creation", nullable = false)
     private LocalDateTime dateCreation;
 
     @Column(name = "date_modification")
@@ -54,6 +56,14 @@ public class User implements Serializable {
     public User(Long id, String nom, String prenom, String email, Role role) {
         this();
         this.id = id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.role = role;
+    }
+
+    public User(String nom, String prenom, String email, Role role) {
+        this();
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
@@ -92,12 +102,49 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public String getMotDePasse() {
-        return motDePasse;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    /**
+     * À utiliser quand tu reçois un mot de passe brut depuis un formulaire.
+     */
+    public void setPassword(String plainPassword) {
+        if (plainPassword == null || plainPassword.isBlank()) {
+            throw new IllegalArgumentException("Le mot de passe ne peut pas être vide.");
+        }
+        this.passwordHash = PasswordUtil.hashPassword(plainPassword);
+    }
+
+    /**
+     * Vérifie si le mot de passe brut correspond au hash stocké.
+     */
+    public boolean checkPassword(String plainPassword) {
+        if (plainPassword == null || passwordHash == null) {
+            return false;
+        }
+        return PasswordUtil.checkPassword(plainPassword, passwordHash);
+    }
+
+    /**
+     * Compatibilité temporaire si ton ancien code utilise encore getMotDePasse().
+     * À supprimer plus tard après refactorisation complète.
+     */
+    @Transient
+    public String getMotDePasse() {
+        return passwordHash;
+    }
+
+    /**
+     * Compatibilité temporaire si ton ancien code utilise encore setMotDePasse().
+     * Ici on hash automatiquement la valeur reçue.
+     */
     public void setMotDePasse(String motDePasse) {
-        this.motDePasse = motDePasse;
+        setPassword(motDePasse);
     }
 
     public Role getRole() {

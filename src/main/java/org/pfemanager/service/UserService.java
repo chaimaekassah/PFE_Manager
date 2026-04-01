@@ -4,9 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import org.pfemanager.enums.Role;
-import org.pfemanager.enums.StatutUser;
 import org.pfemanager.model.User;
+import org.pfemanager.model.Role;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,7 +16,8 @@ public class UserService implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
+    private final EntityManagerFactory emf =
+            Persistence.createEntityManagerFactory("pfe_manager_pu");
 
     private EntityManager getEntityManager() {
         return emf.createEntityManager();
@@ -27,21 +27,9 @@ public class UserService implements Serializable {
         EntityManager em = getEntityManager();
         try {
             return em.createQuery(
-                            "SELECT u FROM User u WHERE u.statut <> :statutSupprime ORDER BY u.id",
-                            User.class
-                    )
-                    .setParameter("statutSupprime", StatutUser.SUPPRIME)
-                    .getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public List<User> getAllUsersIncludingDeleted() {
-        EntityManager em = getEntityManager();
-        try {
-            return em.createQuery("SELECT u FROM User u ORDER BY u.id", User.class)
-                    .getResultList();
+                    "SELECT u FROM User u ORDER BY u.id",
+                    User.class
+            ).getResultList();
         } finally {
             em.close();
         }
@@ -76,11 +64,10 @@ public class UserService implements Serializable {
         EntityManager em = getEntityManager();
         try {
             return em.createQuery(
-                            "SELECT u FROM User u WHERE u.role = :role AND u.statut <> :statutSupprime ORDER BY u.id",
+                            "SELECT u FROM User u WHERE u.role = :role ORDER BY u.id",
                             User.class
                     )
                     .setParameter("role", Role.ETUDIANT)
-                    .setParameter("statutSupprime", StatutUser.SUPPRIME)
                     .getResultList();
         } finally {
             em.close();
@@ -91,11 +78,10 @@ public class UserService implements Serializable {
         EntityManager em = getEntityManager();
         try {
             return em.createQuery(
-                            "SELECT u FROM User u WHERE u.role = :role AND u.statut <> :statutSupprime ORDER BY u.id",
+                            "SELECT u FROM User u WHERE u.role = :role ORDER BY u.id",
                             User.class
                     )
                     .setParameter("role", Role.ENCADRANT)
-                    .setParameter("statutSupprime", StatutUser.SUPPRIME)
                     .getResultList();
         } finally {
             em.close();
@@ -110,9 +96,7 @@ public class UserService implements Serializable {
             em.getTransaction().commit();
             return user;
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw e;
         } finally {
             em.close();
@@ -127,9 +111,7 @@ public class UserService implements Serializable {
             em.getTransaction().commit();
             return updatedUser;
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw e;
         } finally {
             em.close();
@@ -142,38 +124,11 @@ public class UserService implements Serializable {
             em.getTransaction().begin();
             User user = em.find(User.class, id);
             if (user != null) {
-                user.setStatut(StatutUser.SUPPRIME);
-                em.merge(user);
+                em.remove(user); // suppression réelle
             }
             em.getTransaction().commit();
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
-    }
-
-    public void toggleStatut(Long id) {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            User user = em.find(User.class, id);
-            if (user != null) {
-                if (user.getStatut() == StatutUser.ACTIF) {
-                    user.setStatut(StatutUser.INACTIF);
-                } else if (user.getStatut() == StatutUser.INACTIF) {
-                    user.setStatut(StatutUser.ACTIF);
-                }
-                em.merge(user);
-            }
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw e;
         } finally {
             em.close();
@@ -190,18 +145,15 @@ public class UserService implements Serializable {
             String kw = "%" + keyword.toLowerCase().trim() + "%";
 
             return em.createQuery(
-                            "SELECT u FROM User u " +
-                                    "WHERE u.statut <> :statutSupprime " +
-                                    "AND (" +
+                            "SELECT u FROM User u WHERE " +
                                     "LOWER(u.nom) LIKE :kw OR " +
-                                    "LOWER(COALESCE(u.prenom, '')) LIKE :kw OR " +
-                                    "LOWER(u.email) LIKE :kw" +
-                                    ") ORDER BY u.id",
+                                    "LOWER(u.email) LIKE :kw " +
+                                    "ORDER BY u.id",
                             User.class
                     )
-                    .setParameter("statutSupprime", StatutUser.SUPPRIME)
                     .setParameter("kw", kw)
                     .getResultList();
+
         } finally {
             em.close();
         }

@@ -1,7 +1,7 @@
 package org.pfemanager.controller;
 
 import org.pfemanager.model.User;
-import org.pfemanager.enums.Role;
+import org.pfemanager.model.Role;
 import org.pfemanager.enums.StatutUser;
 import org.pfemanager.service.UserService;
 
@@ -30,7 +30,6 @@ public class AdminUserFormBean implements Serializable {
     private Long userId;
     private boolean editMode = false;
 
-    // Appelé par f:viewAction dans modifier-utilisateur.xhtml
     public void loadUser() {
         if (userId != null) {
             Optional<User> existing = userService.findById(userId);
@@ -50,9 +49,14 @@ public class AdminUserFormBean implements Serializable {
             }
             return "/admin/gestion-utilisateurs?faces-redirect=true";
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Erreur lors de l'enregistrement : " + e.getMessage(), null));
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Erreur lors de l'enregistrement : " + e.getMessage(),
+                            null
+                    )
+            );
             return null;
         }
     }
@@ -63,7 +67,7 @@ public class AdminUserFormBean implements Serializable {
 
     public List<Role> getAllRoles() {
         return Arrays.stream(Role.values())
-                .filter(r -> r != Role.ADMIN)
+                .filter(r -> r != Role.ADMINISTRATEUR)
                 .collect(Collectors.toList());
     }
 
@@ -71,7 +75,6 @@ public class AdminUserFormBean implements Serializable {
         return Arrays.asList(StatutUser.values());
     }
 
-    // Getters & Setters
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 

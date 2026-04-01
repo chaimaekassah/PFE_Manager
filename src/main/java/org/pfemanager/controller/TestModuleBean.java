@@ -1,6 +1,5 @@
 package org.pfemanager.controller;
 
-import org.pfemanager.enums.Role;
 import org.pfemanager.model.User;
 import org.pfemanager.service.UserService;
 
@@ -10,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
+import org.pfemanager.model.Role;
 
 @Named("testModuleBean")
 @SessionScoped
@@ -50,7 +50,7 @@ public class TestModuleBean implements Serializable {
     }
 
     public String loginAsAdmin() {
-        currentUser = findFirstByRole(Role.ADMIN);
+        currentUser = findFirstByRole(Role.ADMINISTRATEUR);
         selectedUserId = currentUser != null ? currentUser.getId() : null;
         return "test-module?faces-redirect=true";
     }
@@ -70,7 +70,7 @@ public class TestModuleBean implements Serializable {
     }
 
     public boolean isAdmin() {
-        return currentUser != null && currentUser.getRole() == Role.ADMIN;
+        return currentUser != null && currentUser.getRole() == Role.ADMINISTRATEUR;
     }
 
     public boolean isLoggedIn() {

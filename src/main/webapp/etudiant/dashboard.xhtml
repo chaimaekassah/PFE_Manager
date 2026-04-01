@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>PFE Manager – Dashboard Étudiant</title>
+    <h:outputStylesheet name="css/style.css"/>
+    <h:outputStylesheet name="css/dashboard.css"/>
+</h:head>
+<h:body>
+    <div class="app-layout">
+
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+            <ui:param name="rolePrefix" value="etudiant"/>
+            <ui:param name="currentPage" value="dashboard"/>
+        </ui:include>
+
+        <main class="main-content" style="margin-top: 0 !important; padding-top: 32px !important; display: block !important;">
+            <div style="margin-bottom: 28px;">
+                <h1 class="page-title">Mon Espace PFE</h1>
+                <p class="page-subtitle">Suivez l'état de vos candidatures et votre affectation finale.</p>
+            </div>
+
+<!--            <h:panelGroup rendered="#{etudiantBean.affecte}">-->
+<!--                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 25px; border-radius: 15px; display: flex; align-items: center; gap: 20px;">-->
+<!--                    <div style="font-size: 40px;">🎉</div>-->
+<!--                    <div>-->
+<!--                        <h2 style="color: #166534; margin: 0;">Félicitations ! Vous êtes affecté.</h2>-->
+<!--                        <p style="color: #15803d; margin: 5px 0 0 0;">Sujet : <strong>#{etudiantBean.sujetAffecte.titre}</strong></p>-->
+<!--                        <p style="font-size: 13px;">Encadrant : #{etudiantBean.sujetAffecte.encadrant.nom}</p>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </h:panelGroup>-->
+
+<!--            <h:panelGroup rendered="#{!etudiantBean.affecte}">-->
+<!--                <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">-->
+<!--                    <h3 style="color: #1e3a8a; margin-bottom: 15px;">Statut de vos demandes</h3>-->
+<!--                    <p style="color: #64748b;">Vous n'avez pas encore d'affectation définitive.</p>-->
+<!--                    <div style="margin-top: 20px; display: flex; gap: 10px;">-->
+<!--                        <h:link outcome="/etudiant/sujets" styleClass="btn-primary" value="🔍 Parcourir les sujets disponibles" style="text-decoration:none;"/>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </h:panelGroup>-->
+            <h:panelGroup rendered="#{etudiantBean.affecte and etudiantBean.sujetAffecte != null}">
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 25px;
+                border-radius: 15px; display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 40px;">🎉</div>
+                    <div>
+                        <h2 style="color: #166534; margin: 0;">Félicitations ! Vous êtes affecté.</h2>
+                        <p style="color: #15803d; margin: 5px 0 0 0;">
+                            Sujet : <strong>#{etudiantBean.sujetAffecte.titre}</strong>
+                        </p>
+                        <p style="font-size: 13px;">
+                            Encadrant : #{etudiantBean.sujetAffecte.encadrant.nom}
+                        </p>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{!etudiantBean.affecte}">
+                <div style="background: white; padding: 25px; border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <h3 style="color: #1e3a8a; margin-bottom: 15px;">Statut de vos demandes</h3>
+                    <p style="color: #64748b;">Vous n'avez pas encore d'affectation définitive.</p>
+                    <div style="margin-top: 20px;">
+                        <a href="#{request.contextPath}/etudiant/sujets.xhtml"
+                           class="btn-primary" style="text-decoration:none;">
+                            🔍 Parcourir les sujets disponibles
+                        </a>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </main>
+
+    </div>
+</h:body>
+</html>

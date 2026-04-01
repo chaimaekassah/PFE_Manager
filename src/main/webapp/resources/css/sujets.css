@@ -1,0 +1,301 @@
+/* ══════════════════════════════════════════════
+   SUJETS
+══════════════════════════════════════════════ */
+
+/* Barre recherche */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus { border-color: #1a3c6e; }
+
+/* Grille sujets */
+.sujets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Carte sujet */
+.sujet-card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sujet-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+}
+
+.sujet-complet { opacity: 0.7; }
+
+.sujet-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.sujet-titre {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    flex: 1;
+}
+
+.sujet-desc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sujet-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.sujet-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+/* Statuts */
+.statut-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.statut-disponible { background: #d1fae5; color: #065f46; }
+.statut-complet    { background: #fee2e2; color: #991b1b; }
+.statut-ferme      { background: #f1f5f9; color: #64748b; }
+
+/* Boutons */
+.btn-outline {
+    padding: 8px 16px;
+    border: 1.5px solid #1a3c6e;
+    color: #1a3c6e;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.btn-outline:hover { background: #1a3c6e; color: white; }
+
+.btn-danger {
+    padding: 8px 16px;
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1.5px solid #fca5a5;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover { background: #ef4444; color: white; }
+
+/* Section card */
+.section-card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 24px;
+}
+
+/* Candidatures */
+.candidatures-list { display: flex; flex-direction: column; gap: 12px; }
+
+.candidature-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border-left: 4px solid #f59e0b;
+    gap: 16px;
+}
+
+.candidature-info { flex: 1; }
+.candidature-info strong { display: block; font-size: 14px; color: #1e293b; }
+.candidature-info .text-muted { font-size: 13px; color: #64748b; }
+.motivation-text { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+.candidature-actions { display: flex; gap: 8px; }
+
+.btn-accept {
+    padding: 7px 14px;
+    background: #d1fae5;
+    color: #065f46;
+    border: 1.5px solid #6ee7b7;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-accept:hover { background: #10b981; color: white; }
+
+.btn-refuse {
+    padding: 7px 14px;
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1.5px solid #fca5a5;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-refuse:hover { background: #ef4444; color: white; }
+
+/* Détail sujet */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+.detail-card {
+    background: white;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.detail-description {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.detail-meta { display: flex; flex-direction: column; gap: 14px; }
+.meta-item { display: flex; flex-direction: column; gap: 4px; }
+
+/* Étudiant affecté */
+.etudiant-affecte {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f0f9ff;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.etudiant-tag {
+    display: inline-block;
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.affectation-info { padding-top: 8px; border-top: 1px solid #f1f5f9; }
+
+/* Formulaire sujet */
+.form-card {
+    background: white;
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    max-width: 700px;
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+.form-input-sm { width: 100px; }
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+    font-size: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.text-muted { color: #94a3b8; font-size: 13px; }
+
+/* Responsive */
+@media (max-width: 900px) {
+    .detail-grid { grid-template-columns: 1fr; }
+    .sujets-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Fix page-header sujets ── */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-top: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.page-header div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+/* Force scroll au top au chargement */
+.main-content {
+    scroll-padding-top: 0;
+}
+
+.page-title {
+    scroll-margin-top: 0;
+}

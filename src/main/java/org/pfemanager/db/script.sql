@@ -1,42 +1,49 @@
 -- =========================================================
--- CREATION DE LA BASE
+-- BASE DE DONNÉES PFE_MANAGER
 -- =========================================================
+
 CREATE DATABASE pfemanager;
 
--- Se connecter à la base (psql)
--- \c pfemanager
-
 -- =========================================================
--- SUPPRESSION DES TABLES
+-- CLEAN
 -- =========================================================
+DROP TABLE IF EXISTS reset_tokens CASCADE;
 DROP TABLE IF EXISTS commentaires CASCADE;
 DROP TABLE IF EXISTS documents CASCADE;
 DROP TABLE IF EXISTS candidatures CASCADE;
 DROP TABLE IF EXISTS projets CASCADE;
+DROP TABLE IF EXISTS sujets CASCADE;
 DROP TABLE IF EXISTS utilisateurs CASCADE;
 
+-- =========================================================
+-- UTILISATEURS (COMPATIBLE AVEC User.java)
+-- =========================================================
 CREATE TABLE utilisateurs (
                               id BIGSERIAL PRIMARY KEY,
                               nom VARCHAR(255) NOT NULL,
-                              prenom VARCHAR(255),
                               email VARCHAR(255) UNIQUE NOT NULL,
-                              mot_de_passe VARCHAR(255),
-                              role VARCHAR(50) NOT NULL CHECK (role IN ('ETUDIANT', 'ENCADRANT', 'ADMIN')),
-                              statut VARCHAR(50) NOT NULL CHECK (statut IN ('ACTIF', 'INACTIF', 'SUSPENDU')),
-                              date_creation TIMESTAMP,
-                              date_modification TIMESTAMP,
+                              mot_de_passe VARCHAR(255) NOT NULL,
+                              role VARCHAR(50) NOT NULL CHECK (
+                                  role IN ('ETUDIANT', 'ENCADRANT', 'ADMINISTRATEUR')
+                                  ),
                               photo VARCHAR(255)
 );
 
-INSERT INTO utilisateurs
-(nom, prenom, email, mot_de_passe, role, statut, date_creation, date_modification, photo)
-VALUES
-    ('Admin', 'System', 'admin@pfemanager.com', 'admin123', 'ADMIN', 'ACTIF', CURRENT_TIMESTAMP, NULL, NULL),
-    ('Malki', 'Ikram', 'ikram@pfemanager.com', '123456', 'ETUDIANT', 'ACTIF', CURRENT_TIMESTAMP, NULL, NULL),
-    ('Professeur', 'A', 'prof@pfemanager.com', 'prof123', 'ENCADRANT', 'ACTIF', CURRENT_TIMESTAMP, NULL, NULL);
+-- =========================================================
+-- SUJETS
+-- =========================================================
+CREATE TABLE sujets (
+                        id BIGSERIAL PRIMARY KEY,
+                        titre VARCHAR(255) NOT NULL,
+                        description TEXT,
+                        technologies VARCHAR(255),
+                        capacite_max INTEGER DEFAULT 1,
+                        encadrant_id BIGINT,
+                        FOREIGN KEY (encadrant_id) REFERENCES utilisateurs(id)
+);
 
 -- =========================================================
--- TABLE : projets
+-- PROJETS
 -- =========================================================
 CREATE TABLE projets (
                          id BIGSERIAL PRIMARY KEY,
@@ -45,33 +52,28 @@ CREATE TABLE projets (
                          etudiant_id BIGINT,
                          encadrant_id BIGINT,
                          statut VARCHAR(50) DEFAULT 'EN_COURS',
-                         date_debut TIMESTAMP,
-                         date_fin TIMESTAMP,
-
-                         FOREIGN KEY (etudiant_id) REFERENCES utilisateurs(id) ON DELETE SET NULL,
-                         FOREIGN KEY (encadrant_id) REFERENCES utilisateurs(id) ON DELETE SET NULL
+                         date_debut TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                         FOREIGN KEY (etudiant_id) REFERENCES utilisateurs(id),
+                         FOREIGN KEY (encadrant_id) REFERENCES utilisateurs(id)
 );
 
 -- =========================================================
--- TABLE : candidatures
+-- CANDIDATURES
 -- =========================================================
 CREATE TABLE candidatures (
                               id BIGSERIAL PRIMARY KEY,
-                              etudiant_id BIGINT NOT NULL,
+                              etudiant_id BIGINT,
                               encadrant_id BIGINT,
-                              sujet VARCHAR(255) NOT NULL,
+                              sujet VARCHAR(255),
                               message_motivation TEXT,
                               statut VARCHAR(50) DEFAULT 'EN_ATTENTE',
-                              remarque_encadrant TEXT,
                               date_candidature TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                              date_reponse TIMESTAMP,
-
-                              FOREIGN KEY (etudiant_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,
-                              FOREIGN KEY (encadrant_id) REFERENCES utilisateurs(id) ON DELETE SET NULL
+                              FOREIGN KEY (etudiant_id) REFERENCES utilisateurs(id),
+                              FOREIGN KEY (encadrant_id) REFERENCES utilisateurs(id)
 );
 
 -- =========================================================
--- TABLE : documents
+-- DOCUMENTS
 -- =========================================================
 CREATE TABLE documents (
                            id BIGSERIAL PRIMARY KEY,
@@ -82,70 +84,74 @@ CREATE TABLE documents (
                            date_depot TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                            depositaire_id BIGINT,
                            projet_id BIGINT,
-
-                           FOREIGN KEY (depositaire_id) REFERENCES utilisateurs(id) ON DELETE SET NULL,
-                           FOREIGN KEY (projet_id) REFERENCES projets(id) ON DELETE CASCADE
+                           FOREIGN KEY (depositaire_id) REFERENCES utilisateurs(id),
+                           FOREIGN KEY (projet_id) REFERENCES projets(id)
 );
 
 -- =========================================================
--- TABLE : commentaires
+-- COMMENTAIRES
 -- =========================================================
 CREATE TABLE commentaires (
                               id BIGSERIAL PRIMARY KEY,
                               auteur_id BIGINT,
-                              contenu TEXT NOT NULL,
+                              contenu TEXT,
                               date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                               projet_id BIGINT,
-
-                              FOREIGN KEY (auteur_id) REFERENCES utilisateurs(id) ON DELETE SET NULL,
-                              FOREIGN KEY (projet_id) REFERENCES projets(id) ON DELETE CASCADE
+                              FOREIGN KEY (auteur_id) REFERENCES utilisateurs(id),
+                              FOREIGN KEY (projet_id) REFERENCES projets(id)
 );
 
 -- =========================================================
--- DONNEES DE TEST
+-- RESET TOKEN
 -- =========================================================
+CREATE TABLE reset_tokens (
+                              id BIGSERIAL PRIMARY KEY,
+                              email VARCHAR(255),
+                              token VARCHAR(255),
+                              date_expiration TIMESTAMP,
+                              utilise BOOLEAN DEFAULT FALSE
+);
 
-INSERT INTO utilisateurs (nom, email, mot_de_passe, role, photo)
-VALUES
-    ('Admin', 'admin@pfemanager.com', 'admin123', 'ADMIN', NULL),
-    ('Ikram', 'ikram@pfemanager.com', '123456', 'ETUDIANT', NULL),
-    ('Professeur A', 'prof@pfemanager.com', 'prof123', 'ENCADRANT', NULL);
+-- =========================================================
+-- INSERT USERS
+-- =========================================================
+INSERT INTO utilisateurs (nom, email, mot_de_passe, role) VALUES
+                                                              ('Admin', 'admin@pfemanager.com', '$2a$10$hash', 'ADMINISTRATEUR'),
+                                                              ('Ikram', 'ikram@pfemanager.com', '$2a$10$hash', 'ETUDIANT'),
+                                                              ('Prof', 'prof@pfemanager.com', '$2a$10$hash', 'ENCADRANT');
 
-INSERT INTO projets (sujet, description, etudiant_id, encadrant_id, statut, date_debut)
-VALUES
-    (
-        'Plateforme de gestion des PFE',
-        'Application web pour gérer les PFE',
-        2,
-        3,
-        'EN_COURS',
-        CURRENT_TIMESTAMP
-    );
+-- =========================================================
+-- INSERT SUJETS
+-- =========================================================
+INSERT INTO sujets (titre, description, technologies, capacite_max, encadrant_id)
+VALUES ('Plateforme PFE', 'Gestion PFE', 'Java, JSF', 2, 3);
 
+-- =========================================================
+-- INSERT PROJETS
+-- =========================================================
+INSERT INTO projets (sujet, description, etudiant_id, encadrant_id)
+VALUES ('Plateforme PFE', 'Projet académique', 2, 3);
+
+-- =========================================================
+-- INSERT CANDIDATURES
+-- =========================================================
 INSERT INTO candidatures (etudiant_id, encadrant_id, sujet, message_motivation)
-VALUES
-    (
-        2,
-        3,
-        'Plateforme de gestion des PFE',
-        'Je suis motivée pour travailler sur ce projet.'
-    );
+VALUES (2, 3, 'Plateforme PFE', 'Motivée');
 
+-- =========================================================
+-- INSERT DOCUMENTS
+-- =========================================================
 INSERT INTO documents (nom_fichier, type_fichier, taille, chemin, depositaire_id, projet_id)
-VALUES
-    (
-        'cahier_des_charges.pdf',
-        'application/pdf',
-        245760,
-        '/uploads/cahier.pdf',
-        2,
-        1
-    );
+VALUES ('rapport.pdf', 'pdf', 1000, '/files/rapport.pdf', 2, 1);
 
+-- =========================================================
+-- INSERT COMMENTAIRES
+-- =========================================================
 INSERT INTO commentaires (auteur_id, contenu, projet_id)
-VALUES
-    (
-        3,
-        'Bon début de projet, continuez.',
-        1
-    );
+VALUES (3, 'Bon travail', 1);
+
+-- =========================================================
+-- INSERT TOKEN
+-- =========================================================
+INSERT INTO reset_tokens (email, token, date_expiration)
+VALUES ('ikram@pfemanager.com', 'token123', CURRENT_TIMESTAMP + INTERVAL '1 day');

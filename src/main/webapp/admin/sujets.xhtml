@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>PFE Manager – Tous les sujets</title>
+    <h:outputStylesheet name="css/style.css"/>
+    <h:outputStylesheet name="css/dashboard.css"/>
+    <h:outputStylesheet name="css/sujets.css"/>
+</h:head>
+<h:body style="margin: 0; padding: 0; display: block !important;">
+    <div class="app-layout" style="align-items: flex-start !important; display: flex !important;">
+
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+            <ui:param name="rolePrefix" value="admin"/>
+            <ui:param name="currentPage" value="sujets"/>
+        </ui:include>
+
+        <main class="main-content" style="margin-top: 0 !important; padding-top: 32px !important; display: block !important; height: auto !important;">
+
+            <div style="width: 100%; display: block; margin-bottom: 28px;">
+                <h1 class="page-title" style="margin-top: 0 !important;">Tous les sujets</h1>
+                <p class="page-subtitle">Vue globale de tous les sujets proposés</p>
+            </div>
+
+            <div class="sujets-grid">
+                <ui:repeat value="#{sujetBean.sujets}" var="s">
+                    <div class="sujet-card">
+                        <div class="sujet-card-header">
+                            <h3 class="sujet-titre">#{s.titre}</h3>
+                            <span class="statut-badge statut-#{s.statut.name().toLowerCase()}">
+                                #{s.statut}
+                            </span>
+                        </div>
+                        <p class="sujet-desc">#{s.description}</p>
+                        <div class="sujet-meta">
+                            <span>👤 #{s.encadrant.nom}</span>
+                            <span>🛠 #{s.technologiesRequises}</span>
+                            <span>👥 #{s.nombreMaxEtudiants} étudiant(s) max</span>
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+
+            <h:panelGroup rendered="#{empty sujetBean.sujets}">
+                <div class="empty-state">
+                    <p>📭 Aucun sujet disponible.</p>
+                </div>
+            </h:panelGroup>
+        </main>
+    </div>
+</h:body>
+</html>

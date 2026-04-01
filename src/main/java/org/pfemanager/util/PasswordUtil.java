@@ -17,7 +17,7 @@ public class PasswordUtil {
         return BCrypt.checkpw(motDePasse, hash);
     }
 
-    // Compatibilité temporaire avec ton ancien code
+    // Compatibilité avec ancien code
     public static String hasher(String motDePasse) {
         return hashPassword(motDePasse);
     }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition>
+
+    <aside class="sidebar">
+
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <img src="#{request.contextPath}/resources/images/logo.png"
+                 alt="PFE Manager"
+                 class="sidebar-logo-img"/>
+        </div>
+
+        <!-- Avatar utilisateur -->
+        <div class="sidebar-user">
+            <div class="sidebar-avatar">
+                <img src="#{request.contextPath}/#{authBean.utilisateurConnecte.photoOuDefaut}"
+                     alt="Avatar"
+                     class="sidebar-avatar-img"
+                     onerror="this.src='#{request.contextPath}/resources/images/default-avatar.png'"/>
+            </div>
+            <div class="sidebar-user-info">
+                <span class="sidebar-user-name">#{authBean.utilisateurConnecte.nom}</span>
+                <span class="sidebar-user-role">#{authBean.utilisateurConnecte.role}</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+            <a href="#{request.contextPath}/#{rolePrefix}/dashboard.xhtml"
+               class="sidebar-link #{currentPage == 'dashboard' ? 'active' : ''}">
+                <span class="sidebar-icon">🏠</span> Dashboard
+            </a>
+            <a href="#{request.contextPath}/#{rolePrefix}/profil.xhtml"
+               class="sidebar-link #{currentPage == 'profil' ? 'active' : ''}">
+                <span class="sidebar-icon">👤</span> Mon Profil
+            </a>
+            <!-- Sujets visible pour TOUS les rôles -->
+            <a href="#{request.contextPath}/#{rolePrefix}/sujets.xhtml"
+               class="sidebar-link #{currentPage == 'sujets' ? 'active' : ''}">
+                <span class="sidebar-icon">📋</span> Sujets
+            </a>
+        </nav>
+
+        <!-- Logout -->
+        <div class="sidebar-footer">
+            <h:form>
+                <h:commandButton value="Se déconnecter"
+                                 action="#{authBean.logout}"
+                                 styleClass="sidebar-logout"/>
+            </h:form>
+        </div>
+
+    </aside>
+
+</ui:composition>
+</html>

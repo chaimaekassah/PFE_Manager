@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>PFE Manager – Mon Profil</title>
+    <h:outputStylesheet name="css/style.css" />
+    <h:outputStylesheet name="css/dashboard.css" />
+</h:head>
+<h:body>
+
+    <div class="app-layout">
+
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+            <ui:param name="rolePrefix" value="etudiant" />
+            <ui:param name="currentPage" value="profil" />
+        </ui:include>
+
+        <main class="main-content">
+
+            <div class="page-header">
+                <h1 class="page-title">Mon Profil</h1>
+                <p class="page-subtitle">Gérez vos informations personnelles</p>
+            </div>
+
+            <h:panelGroup rendered="#{not empty profilBean.messageSucces}">
+                <div class="alert alert-success">✅ #{profilBean.messageSucces}</div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{not empty profilBean.messageErreur}">
+                <div class="alert alert-error">❌ #{profilBean.messageErreur}</div>
+            </h:panelGroup>
+
+            <div class="profil-grid">
+
+                <!-- ── Carte Photo ───────────────────────── -->
+                <div class="profil-card profil-photo-card">
+
+                    <div class="profil-avatar-container">
+                        <img src="#{request.contextPath}/#{authBean.utilisateurConnecte.photoOuDefaut}"
+                             alt="Photo de profil"
+                             class="profil-avatar"
+                             onerror="this.src='#{request.contextPath}/resources/images/default-avatar.png'"/>
+                    </div>
+
+                    <h2 class="profil-name">#{authBean.utilisateurConnecte.nom}</h2>
+                    <span class="profil-role-badge role-etudiant">
+                        #{authBean.utilisateurConnecte.role}
+                    </span>
+
+                    <h:form id="photoForm" enctype="multipart/form-data" styleClass="upload-form">
+                        <div class="upload-zone">
+                            <label for="photoForm:photoUpload" class="upload-label">
+                                📷 Choisir une photo
+                            </label>
+                            <h:inputFile value="#{profilBean.photoPart}"
+                                         accept="image/*"
+                                         styleClass="upload-input"
+                                         id="photoUpload"
+                                         onchange="updateFileName(this)"/>
+                            <span id="fileName" class="file-name-display">Aucun fichier choisi</span>
+                        </div>
+                        <h:commandButton value="Mettre à jour la photo"
+                                         action="#{profilBean.uploadPhoto}"
+                                         styleClass="btn-upload"
+                                         onclick="if(!document.getElementById('photoForm:photoUpload').value){alert('Choisissez une photo d\\'abord !'); return false;}"/>
+                    </h:form>
+                </div>
+
+                <!-- ── Carte Informations ─────────────────── -->
+                <div class="profil-card profil-info-card">
+
+                    <h3 class="card-section-title">ℹ️ Informations Générales</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label class="info-label">NOM COMPLET</label>
+                            <p class="info-value">#{authBean.utilisateurConnecte.nom}</p>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">ADRESSE EMAIL</label>
+                            <p class="info-value">#{authBean.utilisateurConnecte.email}</p>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">RÔLE</label>
+                            <p class="info-value">
+                                <span class="profil-role-badge role-etudiant">
+                                    #{authBean.utilisateurConnecte.role}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <h:form id="passwordForm" styleClass="password-form">
+                        <h3 class="card-section-title" style="margin-top:28px;">
+                            🔒 Changer le mot de passe
+                        </h3>
+                        <div class="form-group">
+                            <label class="form-label">Mot de passe actuel</label>
+                            <h:inputSecret value="#{profilBean.ancienMotDePasse}"
+                                           redisplay="false"
+                                           styleClass="form-input"
+                                           placeholder="••••••••" />
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nouveau mot de passe</label>
+                                <h:inputSecret value="#{profilBean.nouveauMotDePasse}"
+                                               redisplay="false"
+                                               styleClass="form-input"
+                                               placeholder="Min. 8 caractères" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirmer</label>
+                                <h:inputSecret value="#{profilBean.confirmerMotDePasse}"
+                                               redisplay="false"
+                                               styleClass="form-input"
+                                               placeholder="Répéter le mot de passe" />
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <h:commandButton value="Enregistrer le mot de passe"
+                                             action="#{profilBean.changerMotDePasse}"
+                                             styleClass="btn-primary" />
+                        </div>
+                    </h:form>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function updateFileName(input) {
+            var display = document.getElementById('fileName');
+            if (display) {
+                display.textContent = input.files.length > 0
+                    ? input.files[0].name
+                    : 'Aucun fichier choisi';
+            }
+        }
+    </script>
+
+</h:body>
+</html>

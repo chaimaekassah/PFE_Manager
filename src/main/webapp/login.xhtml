@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+<h:head>
+    <title>PFE Manager - Connexion</title>
+    <h:outputStylesheet name="css/style.css" />
+</h:head>
+<h:body>
+    <div class="login-container">
+        <h:form id="loginForm">
+            <div class="login-card">
+
+                <h:graphicImage name="images/logo.png"
+                                alt="Logo PFE Manager"
+                                styleClass="logo"/>
+
+                <h2>Connexion au Portail</h2>
+                <p>Gérez vos projets de fin d'études en toute simplicité.</p>
+
+                <!-- Message d'erreur du Bean -->
+                <h:panelGroup rendered="#{not empty authBean.messageErreur}">
+                    <div class="error-message">
+                        <h:outputText value="#{authBean.messageErreur}" />
+                    </div>
+                </h:panelGroup>
+
+                <!-- Message succès après réinitialisation -->
+                <h:panelGroup rendered="#{not empty param['reset']}">
+                    <div class="success-message">
+                        <h:outputText value="Mot de passe réinitialisé avec succès. Connectez-vous." />
+                    </div>
+                </h:panelGroup>
+
+                <div class="input-group">
+                    <h:outputLabel for="email" value="Adresse Email" />
+                    <h:inputText id="email"
+                                 value="#{authBean.email}"
+                                 styleClass="form-control"
+                                 placeholder="votre@email.com" />
+                </div>
+
+                <div class="input-group">
+                    <!-- ✅ Label seul, sans le lien -->
+                    <h:outputLabel for="password" value="Mot de passe" />
+                    <h:inputSecret id="password"
+                                   value="#{authBean.motDePasse}"
+                                   redisplay="true"
+                                   styleClass="form-control" />
+                    <!-- ✅ Lien APRÈS le champ, aligné à droite -->
+                    <div style="text-align: right; margin-top: 5px;">
+                        <a href="forgot-password.xhtml"
+                           class="forgot-link">Mot de passe oublié ?</a>
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <h:selectBooleanCheckbox id="remember" />
+                    <h:outputLabel for="remember" value="Se souvenir de moi" />
+                </div>
+
+                <h:commandButton value="Se connecter"
+                                 action="#{authBean.login}"
+                                 styleClass="btn-primary" />
+
+                <div class="footer-text">
+                    Vous n'avez pas encore un compte ?
+                    <h:link value="Créer votre compte"
+                            outcome="/register.xhtml"
+                            styleClass="create-account-link" />
+                </div>
+
+            </div>
+        </h:form>
+    </div>
+</h:body>
+</html>

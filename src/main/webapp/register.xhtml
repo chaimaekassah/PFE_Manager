@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>PFE Manager - Inscription</title>
+    <h:outputStylesheet name="css/style.css" />
+</h:head>
+<h:body>
+    <div class="login-container">
+        <h:form id="registerForm">
+            <div class="login-card">
+                <h:graphicImage name="images/logo.png" alt="Logo PFE Manager" styleClass="logo"/>
+
+                <h2>Création de Compte</h2>
+                <p>Rejoignez la communauté et gérez vos PFE efficacement.</p>
+
+                <!-- Messages d'erreur -->
+                <h:panelGroup rendered="#{not empty authBean.messageErreur}">
+                    <div class="error-message">
+                        <h:outputText value="#{authBean.messageErreur}" />
+                    </div>
+                </h:panelGroup>
+
+                <div class="input-group">
+                    <h:outputLabel for="fullName" value="Nom Complet" />
+                    <!-- ✅ authBean.nom au lieu de authBean.nouveauUser.nom -->
+                    <h:inputText id="fullName" value="#{authBean.nom}" required="true"
+                                 placeholder="ex: Ahmed Mansour" styleClass="form-control"/>
+                </div>
+
+                <div class="input-group">
+                    <h:outputLabel for="email" value="Adresse Email Universitaire" />
+                    <!-- ✅ authBean.email -->
+                    <h:inputText id="email" value="#{authBean.email}" required="true"
+                                 placeholder="name@university.edu" styleClass="form-control"/>
+                </div>
+
+                <div class="input-group">
+                    <h:outputLabel for="role" value="Rôle" />
+                    <!-- ✅ authBean.roleSelectionne -->
+                    <h:selectOneMenu id="role" value="#{authBean.roleSelectionne}" required="true"
+                                     styleClass="form-control">
+                        <f:selectItem itemLabel="Sélectionnez votre rôle" itemValue="" noSelectionOption="true" />
+                        <f:selectItem itemLabel="Étudiant" itemValue="ETUDIANT" />
+                        <f:selectItem itemLabel="Encadrant" itemValue="ENCADRANT" />
+                    </h:selectOneMenu>
+                </div>
+
+                <div class="input-group">
+                    <h:outputLabel for="password" value="Mot de passe" />
+                    <!-- ✅ authBean.motDePasse -->
+                    <h:inputSecret id="password" value="#{authBean.motDePasse}" required="true"
+                                   styleClass="form-control"/>
+                </div>
+
+                <h:commandButton value="Créer un compte" action="#{authBean.register}"
+                                 styleClass="btn-primary" />
+
+                <div class="footer-links">
+                    Déjà un compte ?
+                    <h:link value="Se connecter" outcome="/login.xhtml" />
+                </div>
+            </div>
+        </h:form>
+    </div>
+</h:body>
+</html>

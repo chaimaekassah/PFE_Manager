@@ -1,7 +1,7 @@
 package org.pfemanager.controller;
 
-import org.pfemanager.enums.StatutUser;
 import org.pfemanager.model.User;
+import org.pfemanager.model.Role;
 import org.pfemanager.service.UserService;
 
 import jakarta.annotation.PostConstruct;
@@ -48,12 +48,6 @@ public class AdminUserBean implements Serializable {
         loadUsers();
     }
 
-    public void toggleStatut(Long userId) {
-        userService.toggleStatut(userId);
-        addMessage(FacesMessage.SEVERITY_INFO, "Statut modifié");
-        loadUsers();
-    }
-
     public void delete(Long userId) {
         userService.delete(userId);
         addMessage(FacesMessage.SEVERITY_INFO, "Utilisateur supprimé");
@@ -68,23 +62,6 @@ public class AdminUserBean implements Serializable {
         return "modifier-utilisateur?faces-redirect=true&userId=" + userId;
     }
 
-    public String getStatutClass(User user) {
-        if (user == null || user.getStatut() == null) {
-            return "";
-        }
-
-        switch (user.getStatut()) {
-            case ACTIF:
-                return "statut-actif";
-            case INACTIF:
-                return "statut-inactif";
-            case SUPPRIME:
-                return "statut-supprime";
-            default:
-                return "";
-        }
-    }
-
     public String getRoleClass(User user) {
         if (user == null || user.getRole() == null) {
             return "";
@@ -95,7 +72,7 @@ public class AdminUserBean implements Serializable {
                 return "role-etudiant";
             case ENCADRANT:
                 return "role-encadrant";
-            case ADMIN:
+            case ADMINISTRATEUR:
                 return "role-admin";
             default:
                 return "";
@@ -106,12 +83,30 @@ public class AdminUserBean implements Serializable {
         return users != null ? users.size() : 0;
     }
 
-    public long getActifUsers() {
+    public long getEtudiantUsers() {
         if (users == null) {
             return 0;
         }
         return users.stream()
-                .filter(u -> u.getStatut() == StatutUser.ACTIF)
+                .filter(u -> u.getRole() == Role.ETUDIANT)
+                .count();
+    }
+
+    public long getEncadrantUsers() {
+        if (users == null) {
+            return 0;
+        }
+        return users.stream()
+                .filter(u -> u.getRole() == Role.ENCADRANT)
+                .count();
+    }
+
+    public long getAdminUsers() {
+        if (users == null) {
+            return 0;
+        }
+        return users.stream()
+                .filter(u -> u.getRole() == Role.ADMINISTRATEUR)
                 .count();
     }
 

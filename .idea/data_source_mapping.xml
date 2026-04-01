@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="DataSourcePerFileMappings">
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/fede717c-fb5e-4fd5-af65-0f65d29d1633/console.sql" value="fede717c-fb5e-4fd5-af65-0f65d29d1633" />
-    <file url="file://$PROJECT_DIR$/src/main/java/org/pfemanager/db/script.sql" value="fede717c-fb5e-4fd5-af65-0f65d29d1633" />
-  </component>
-</project>

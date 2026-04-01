@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="3.0">
     <persistence-unit name="pfe_manager_pu" transaction-type="JTA">
+
         <jta-data-source>java:/jdbc/PFEManagerDS</jta-data-source>
 
         <class>org.pfemanager.model.User</class>

@@ -11,12 +11,15 @@
     <div class="login-container">
         <h:form id="registerForm">
             <div class="login-card">
-                <h:graphicImage name="images/logo.png" alt="Logo PFE Manager" styleClass="logo"/>
+
+                <h:graphicImage name="images/logo.png"
+                                alt="Logo PFE Manager"
+                                styleClass="logo"/>
 
                 <h2>Création de Compte</h2>
                 <p>Rejoignez la communauté et gérez vos PFE efficacement.</p>
 
-                <!-- Messages d'erreur -->
+                <!-- Message d'erreur -->
                 <h:panelGroup rendered="#{not empty authBean.messageErreur}">
                     <div class="error-message">
                         <h:outputText value="#{authBean.messageErreur}" />
@@ -25,43 +28,53 @@
 
                 <div class="input-group">
                     <h:outputLabel for="fullName" value="Nom Complet" />
-                    <!-- ✅ authBean.nom au lieu de authBean.nouveauUser.nom -->
-                    <h:inputText id="fullName" value="#{authBean.nom}" required="true"
-                                 placeholder="ex: Ahmed Mansour" styleClass="form-control"/>
+                    <h:inputText id="fullName"
+                                 value="#{authBean.nom}"
+                                 styleClass="form-control"
+                                 placeholder="ex: Ahmed Mansour" />
                 </div>
 
                 <div class="input-group">
                     <h:outputLabel for="email" value="Adresse Email Universitaire" />
-                    <!-- ✅ authBean.email -->
-                    <h:inputText id="email" value="#{authBean.email}" required="true"
-                                 placeholder="name@university.edu" styleClass="form-control"/>
+                    <h:inputText id="email"
+                                 value="#{authBean.email}"
+                                 styleClass="form-control"
+                                 placeholder="nom@university.edu" />
                 </div>
 
                 <div class="input-group">
                     <h:outputLabel for="role" value="Rôle" />
-                    <!-- ✅ authBean.roleSelectionne -->
-                    <h:selectOneMenu id="role" value="#{authBean.roleSelectionne}" required="true"
+                    <h:selectOneMenu id="role"
+                                     value="#{authBean.roleSelectionne}"
                                      styleClass="form-control">
-                        <f:selectItem itemLabel="Sélectionnez votre rôle" itemValue="" noSelectionOption="true" />
-                        <f:selectItem itemLabel="Étudiant" itemValue="ETUDIANT" />
-                        <f:selectItem itemLabel="Encadrant" itemValue="ENCADRANT" />
+                        <f:selectItem itemLabel="Sélectionnez votre rôle"
+                                      itemValue=""
+                                      noSelectionOption="true" />
+                        <f:selectItem itemLabel="Étudiant"   itemValue="ETUDIANT" />
+                        <f:selectItem itemLabel="Encadrant"  itemValue="ENCADRANT" />
                     </h:selectOneMenu>
                 </div>
 
                 <div class="input-group">
                     <h:outputLabel for="password" value="Mot de passe" />
-                    <!-- ✅ authBean.motDePasse -->
-                    <h:inputSecret id="password" value="#{authBean.motDePasse}" required="true"
-                                   styleClass="form-control"/>
+                    <h:inputSecret id="password"
+                                   value="#{authBean.motDePasse}"
+                                   styleClass="form-control"
+                                   placeholder="Minimum 8 caractères" />
+                    <p class="field-hint">Au moins 8 caractères</p>
                 </div>
 
-                <h:commandButton value="Créer un compte" action="#{authBean.register}"
+                <h:commandButton value="Créer un compte"
+                                 action="#{authBean.register}"
                                  styleClass="btn-primary" />
 
-                <div class="footer-links">
+                <div class="footer-text">
                     Déjà un compte ?
-                    <h:link value="Se connecter" outcome="/login.xhtml" />
+                    <a href="login.xhtml" class="create-account-link">
+                        Se connecter
+                    </a>
                 </div>
+
             </div>
         </h:form>
     </div>

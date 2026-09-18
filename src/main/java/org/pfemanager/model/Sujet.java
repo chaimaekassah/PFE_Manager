@@ -32,7 +32,7 @@ public class Sujet implements Serializable {
     private LocalDateTime dateCreation = LocalDateTime.now();
 
     // Liaison avec l'encadrant
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "encadrant_id", nullable = false)
     private Utilisateur encadrant;
 

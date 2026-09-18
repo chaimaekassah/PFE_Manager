@@ -33,8 +33,9 @@ public class EncadrantBean {
         // Sujets complets de cet encadrant
         validesCount = em.createQuery(
                         "SELECT COUNT(s) FROM Sujet s WHERE s.encadrant.id = :id " +
-                                "AND s.statut = 'COMPLET'", Long.class)
+                                "AND s.statut = :st", Long.class)
                 .setParameter("id", encadrantId)
+                .setParameter("st", org.pfemanager.model.Sujet.StatutSujet.COMPLET)
                 .getSingleResult();
 
         // attenteCount sera géré par le binôme (candidatures)

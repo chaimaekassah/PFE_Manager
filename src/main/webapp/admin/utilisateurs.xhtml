@@ -8,124 +8,206 @@
     <ui:define name="title">Gestion des Utilisateurs - PFE Manager</ui:define>
 
     <ui:define name="content">
-        <div class="content-header">
-            <h1>Gestion des Utilisateurs</h1>
-            <p>Gérez les comptes utilisateurs de la plateforme.</p>
+        <!-- ── Inline CSS for Admin Overhaul (Fail-safe) ── -->
+        <style>
+            .au-stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 24px;
+                margin-bottom: 32px;
+            }
+            .au-stat-card {
+                background: #ffffff !important;
+                border-radius: 20px !important;
+                padding: 28px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 20px !important;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+                border: 1px solid #f1f5f9 !important;
+            }
+            .au-stat-icon {
+                width: 60px; height: 60px; border-radius: 16px;
+                display: flex; align-items: center; justify-content: center; font-size: 24px;
+            }
+            .au-stat-icon--primary { background: #eff6ff; color: #2563eb; }
+            .au-stat-icon--success { background: #f0fdf4; color: #16a34a; }
+            .au-stat-value { font-size: 28px; font-weight: 800; color: #0f172a; display: block; }
+            .au-stat-label { font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 600; }
+
+            .au-toolbar {
+                background: #ffffff !important;
+                border-radius: 20px !important;
+                padding: 24px !important;
+                margin-bottom: 32px !important;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
+                border: 1px solid #f1f5f9 !important;
+                display: flex; justify-content: space-between; align-items: center; gap: 20px;
+            }
+            .au-input {
+                padding: 12px 18px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; flex: 1;
+            }
+            .au-btn {
+                padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; border: none;
+                display: inline-flex; align-items: center; gap: 8px;
+            }
+            .au-btn--primary { background: #2563eb; color: #fff; }
+            .au-btn--success { background: #16a34a; color: #fff; }
+            .au-btn--ghost { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+
+            .au-table-card {
+                background: #ffffff !important;
+                border-radius: 20px !important;
+                box-shadow: 0 4px 25px rgba(0,0,0,0.04) !important;
+                border: 1px solid #f1f5f9 !important;
+                overflow: hidden;
+            }
+            .au-table-header { padding: 24px 32px; border-bottom: 1px solid #f1f5f9; }
+            .au-table-title { font-size: 18px; font-weight: 800; margin: 0; }
+            
+            .au-table { width: 100%; border-collapse: collapse; }
+            .au-table th { background: #f8fafc; padding: 16px 32px; text-align: left; font-size: 12px; color: #64748b; text-transform: uppercase; }
+            .au-table td { padding: 20px 32px; font-size: 14px; color: #334155; border-bottom: 1px solid #f8fafc; }
+
+            .au-badge { padding: 6px 12px; border-radius: 99px; font-size: 12px; font-weight: 700; }
+            .au-badge--admin, .role-admin { background: #fef3c7; color: #92400e; }
+            .au-badge--encadrant, .role-encadrant { background: #f3e8ff; color: #6b21a8; }
+            .au-badge--etudiant, .role-etudiant { background: #dcfce7; color: #166534; }
+            .au-badge--actif, .statut-actif { background: #dcfce7; color: #166534; }
+            .au-badge--suspendu, .statut-inactif { background: #fee2e2; color: #991b1b; }
+
+            .au-action-group { display: flex; gap: 8px; }
+            .au-icon-btn {
+                width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+                border: 1px solid #e2e8f0; background: #fff; cursor: pointer; text-decoration: none;
+            }
+            .au-icon-btn--primary:hover { color: #2563eb; border-color: #2563eb; background: #eff6ff; }
+            .au-icon-btn--danger:hover { color: #ef4444; border-color: #ef4444; background: #fef2f2; }
+            .au-icon-btn--warning:hover { color: #f59e0b; border-color: #f59e0b; background: #fffbeb; }
+            
+            .avatar-circle {
+                width: 32px; height: 32px; border-radius: 50%; background: #2563eb; color: #fff;
+                display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+            }
+        </style>
+
+        <div class="sp-page-hdr">
+            <h1>👥 Gestion des Utilisateurs</h1>
+            <p>Supervisez et administrez l'ensemble des comptes de la plateforme.</p>
         </div>
 
-        <h:messages styleClass="messages"
-                    infoClass="message message-info"
-                    errorClass="message message-error"/>
+        <h:messages id="messages" globalOnly="true" styleClass="sp-msg-wrap"
+                    infoClass="sp-msg sp-msg-ok" errorClass="sp-msg sp-msg-err"/>
 
         <!-- Statistiques -->
-        <div class="stats-container">
-            <div class="stat-box">
-                <div class="stat-value">#{adminUserBean.totalUsers}</div>
-                <div class="stat-label">Total utilisateurs</div>
+        <div class="au-stats-grid">
+            <div class="au-stat-card">
+                <div class="au-stat-icon au-stat-icon--primary">👤</div>
+                <div class="au-stat-info">
+                    <span class="au-stat-value">#{adminUserBean.totalUsers}</span>
+                    <span class="au-stat-label">Total Utilisateurs</span>
+                </div>
             </div>
-            <div class="stat-box">
-                <div class="stat-value">#{adminUserBean.actifUsers}</div>
-                <div class="stat-label">Actifs</div>
+            <div class="au-stat-card">
+                <div class="au-stat-icon au-stat-icon--success">✅</div>
+                <div class="au-stat-info">
+                    <span class="au-stat-value">#{adminUserBean.actifUsers}</span>
+                    <span class="au-stat-label">Comptes Actifs</span>
+                </div>
             </div>
         </div>
 
-        <!-- Formulaire unique englobant recherche + tableau -->
         <h:form id="mainForm">
-            <!-- Barre de recherche -->
-            <div class="card">
-                <div class="flex-between" style="margin-bottom: 20px;">
-                    <div class="search-box" style="flex: 1; margin-right: 15px; display: flex; gap: 10px;">
-                        <h:inputText value="#{adminUserBean.searchKeyword}"
-                                     styleClass="form-control"
-                                     placeholder="Rechercher par nom, prénom ou email..."/>
-                        <h:commandButton value="🔍 Rechercher"
-                                         action="#{adminUserBean.search}"
-                                         styleClass="btn btn-primary">
-                            <f:ajax execute="@form" render="@form"/>
-                        </h:commandButton>
-                        <h:commandButton value="🔄 Réinitialiser"
-                                         action="#{adminUserBean.resetSearch}"
-                                         styleClass="btn btn-secondary">
-                            <f:ajax execute="@this" render="@form"/>
-                        </h:commandButton>
-                    </div>
-
-                    <h:commandButton value="➕ Nouvel utilisateur"
-                                     action="#{adminUserBean.goToAdd}"
-                                     styleClass="btn btn-success"/>
+            <!-- Toolbar -->
+            <div class="au-toolbar">
+                <div style="display: flex; gap: 12px; flex: 1;">
+                    <h:inputText value="#{adminUserBean.searchKeyword}"
+                                 styleClass="au-input"
+                                 placeholder="Rechercher par nom, email..."/>
+                    <h:commandButton value="Rechercher"
+                                     action="#{adminUserBean.search}"
+                                     styleClass="au-btn au-btn--primary">
+                        <f:ajax execute="@form" render="@form"/>
+                    </h:commandButton>
+                    <h:commandButton value="Reset"
+                                     action="#{adminUserBean.resetSearch}"
+                                     styleClass="au-btn au-btn--ghost">
+                        <f:ajax execute="@this" render="@form"/>
+                    </h:commandButton>
                 </div>
+                <h:commandButton action="#{adminUserBean.goToAdd}"
+                                 value="➕ Nouveau"
+                                 styleClass="au-btn au-btn--success" />
             </div>
 
-            <!-- Tableau des utilisateurs -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <span class="card-title-icon">👥</span>
-                        Liste des utilisateurs
-                    </h2>
+            <!-- Table -->
+            <div class="au-table-card">
+                <div class="au-table-header">
+                    <h2 class="au-table-title">Liste des comptes</h2>
                 </div>
 
                 <h:dataTable value="#{adminUserBean.users}"
                              var="user"
-                             styleClass="data-table"
+                             styleClass="au-table"
                              rendered="#{not empty adminUserBean.users}">
 
                     <h:column>
-                        <f:facet name="header">Nom</f:facet>
-                        #{user.nom}
-                    </h:column>
-
-                    <h:column>
-                        <f:facet name="header">Prénom</f:facet>
-                        #{user.prenom}
+                        <f:facet name="header">Utilisateur</f:facet>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="avatar-circle">#{user.nom.substring(0,1)}</div>
+                            <span style="font-weight: 700; color: #0f172a;">#{user.nom} #{user.prenom}</span>
+                        </div>
                     </h:column>
 
                     <h:column>
                         <f:facet name="header">Email</f:facet>
-                        #{user.email}
+                        <span style="color: #64748b;">#{user.email}</span>
                     </h:column>
 
                     <h:column>
                         <f:facet name="header">Rôle</f:facet>
-                        <span class="badge #{adminUserBean.getRoleClass(user)}">
+                        <span class="au-badge #{adminUserBean.getRoleClass(user)}">
                             #{user.role.libelle}
                         </span>
                     </h:column>
 
                     <h:column>
                         <f:facet name="header">Statut</f:facet>
-                        <span class="badge #{adminUserBean.getStatutClass(user)}">
+                        <span class="au-badge #{adminUserBean.getStatutClass(user)}">
                             #{user.statut.libelle}
                         </span>
                     </h:column>
 
                     <h:column>
                         <f:facet name="header">Actions</f:facet>
-                        <div class="btn-group">
-                            <h:commandButton value="✏️ Modifier"
-                                             action="#{adminUserBean.goToEdit(user.id)}"
-                                             styleClass="btn btn-primary btn-sm"/>
+                        <div class="au-action-group">
+                            <h:commandLink action="#{adminUserBean.goToEdit(user.id)}"
+                                           title="Modifier"
+                                           styleClass="au-icon-btn au-icon-btn--primary">
+                                <span>✏️</span>
+                            </h:commandLink>
 
-                            <h:commandButton value="🔄 Activer/Désactiver"
-                                             action="#{adminUserBean.toggleStatut(user.id)}"
-                                             styleClass="btn btn-warning btn-sm">
+                            <h:commandLink action="#{adminUserBean.toggleStatut(user.id)}"
+                                           title="Toggle Status"
+                                           styleClass="au-icon-btn au-icon-btn--warning">
+                                <span>🔄</span>
                                 <f:ajax execute="@this" render="@form"/>
-                            </h:commandButton>
+                            </h:commandLink>
 
-                            <h:commandButton value="🗑️ Supprimer"
-                                             action="#{adminUserBean.delete(user.id)}"
-                                             styleClass="btn btn-danger btn-sm"
-                                             onclick="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+                            <h:commandLink action="#{adminUserBean.delete(user.id)}"
+                                           title="Supprimer"
+                                           styleClass="au-icon-btn au-icon-btn--danger"
+                                           onclick="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+                                <span>🗑️</span>
                                 <f:ajax execute="@this" render="@form"/>
-                            </h:commandButton>
+                            </h:commandLink>
                         </div>
                     </h:column>
                 </h:dataTable>
 
                 <h:panelGroup rendered="#{empty adminUserBean.users}">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">👤</div>
-                        <p class="empty-state-text">Aucun utilisateur trouvé</p>
+                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                        <p>Aucun utilisateur trouvé.</p>
                     </div>
                 </h:panelGroup>
             </div>

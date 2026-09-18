@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import org.pfemanager.model.Utilisateur;
 
 @Entity
 @Table(name = "commentaires")
@@ -15,9 +16,10 @@ public class Commentaire implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "auteur_id")
-    private User auteur;
+    private Utilisateur auteur;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String contenu;
@@ -50,13 +52,8 @@ public class Commentaire implements Serializable {
         this.id = id;
     }
 
-    public User getAuteur() {
-        return auteur;
-    }
-
-    public void setAuteur(User auteur) {
-        this.auteur = auteur;
-    }
+    public Utilisateur getAuteur() { return auteur; }
+    public void setAuteur(Utilisateur auteur) { this.auteur = auteur; }
 
     public String getContenu() {
         return contenu;

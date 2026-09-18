@@ -1,161 +1,429 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ui:composition template="/WEB-INF/templates/layout.xhtml"
-                xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
 
-    <ui:define name="title">Candidatures Reçues - PFE Manager</ui:define>
+<h:head>
+    <title>PFE Manager – Candidatures Reçues</title>
+    <h:outputStylesheet name="css/style.css"/>
+    <h:outputStylesheet name="css/dashboard.css"/>
+    <style>
+        /* ═══════════════════════════════════════
+           CANDIDATURES REÇUES — Encadrant
+           Design fidèle au screenshot
+        ═══════════════════════════════════════ */
 
-    <ui:param name="currentPage" value="candidatures" />
+        /* ── Stat cards bleu foncé ───────────── */
+        .enc-stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .enc-stat {
+            background: #1a3c6e;
+            color: #fff;
+            border-radius: 12px;
+            padding: 28px 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 110px;
+            box-shadow: 0 2px 12px rgba(26,60,110,.18);
+        }
+        .enc-stat__val {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -1px;
+            display: block;
+        }
+        .enc-stat__lbl {
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: capitalize;
+            opacity: .8;
+            display: block;
+            margin-top: 8px;
+        }
 
-    <ui:define name="content">
-        <div class="content-header">
-            <h1>Candidatures Reçues</h1>
-            <p>Consultez et traitez les candidatures reçues pour vos sujets.</p>
-        </div>
+        /* ── Card ────────────────────────────── */
+        .enc-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 8px rgba(0,0,0,.07);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .enc-card__head {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .enc-card__icon  { font-size: 16px; }
+        .enc-card__title { font-size: 14px; font-weight: 700; color: #1e293b; margin: 0; }
 
-        <h:messages styleClass="messages"
-                    infoClass="message message-info"
-                    errorClass="message message-error"/>
+        /* ── Table ───────────────────────────── */
+        .enc-table { width: 100%; border-collapse: collapse; }
+        .enc-table th {
+            background: #f8f9fb;
+            color: #6b7280;
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .5px;
+            padding: 12px 20px; text-align: left;
+            border-bottom: 1px solid #edf0f4;
+        }
+        .enc-table td {
+            padding: 14px 20px;
+            font-size: 13px; color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+        .enc-table tr:last-child td { border-bottom: none; }
+        .enc-table tr:hover td      { background: #fafbfc; }
+        .enc-table .name-cell    { color: #2563eb; font-weight: 600; }
+        .enc-table .subject-cell { color: #374151; }
+        .enc-table .date-cell    { color: #6b7280; white-space: nowrap; }
 
-        <div class="stats-container">
-            <div class="stat-box">
-                <div class="stat-value">#{candidatureEncadrantBean.candidaturesEnAttente}</div>
-                <div class="stat-label">En attente</div>
+        /* ── Badge statut ────────────────────── */
+        .ebadge {
+            display: inline-block;
+            padding: 3px 10px; border-radius: 4px;
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .4px;
+        }
+        .ebadge-en_attente { background: #e8f0fb; color: #1a56db; }
+        .ebadge-acceptee   { background: #dcfce7; color: #166534; }
+        .ebadge-refusee    { background: #fee2e2; color: #991b1b; }
+        .ebadge-retiree    { background: #f1f5f9; color: #64748b; }
+
+        /* ── Boutons ─────────────────────────── */
+        .ebtn {
+            display: inline-flex; align-items: center;
+            padding: 7px 18px; border-radius: 7px;
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; border: none;
+            font-family: inherit; transition: background .2s;
+        }
+        .ebtn-primary { background: #1a3c6e; color: #fff; }
+        .ebtn-primary:hover { background: #0f2548; }
+        .ebtn-success { background: #16a34a; color: #fff; }
+        .ebtn-success:hover { background: #15803d; }
+        .ebtn-danger  { background: #ef4444; color: #fff; }
+        .ebtn-danger:hover  { background: #dc2626; }
+        .ebtn-ghost   { background: transparent; color: #475569; border: 1.5px solid #cbd5e1; }
+        .ebtn-ghost:hover { background: #f8fafc; }
+
+        /* ── Empty state ─────────────────────── */
+        .enc-empty { text-align: center; padding: 52px 24px; color: #9ca3af; }
+        .enc-empty__icon  { font-size: 48px; display: block; margin-bottom: 12px; }
+        .enc-empty__title { font-size: 15px; font-weight: 700; color: #6b7280; margin: 0 0 6px; }
+        .enc-empty__sub   { font-size: 13px; margin: 0; }
+
+        /* ── Modal ───────────────────────────── */
+        .enc-modal-bg {
+            position: fixed; inset: 0;
+            background: rgba(15,23,42,.45); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+        .enc-modal {
+            background: #fff; border-radius: 16px;
+            width: 100%; max-width: 620px; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
+            animation: modalIn .25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity:0; transform: scale(.95) translateY(-10px); }
+            to   { opacity:1; transform: none; }
+        }
+        .enc-modal__head {
+            background: linear-gradient(135deg,#1a3c6e,#2563eb);
+            color: #fff; padding: 22px 28px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            border-radius: 16px 16px 0 0;
+        }
+        .enc-modal__head h2 { margin: 0 0 4px; font-size: 17px; font-weight: 800; }
+        .enc-modal__head p  { margin: 0; font-size: 13px; opacity: .75; }
+        .enc-modal__close {
+            background: rgba(255,255,255,.18); border: none; color: #fff;
+            width: 32px; height: 32px; border-radius: 50%; font-size: 17px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: background .2s; font-family: inherit;
+        }
+        .enc-modal__close:hover { background: rgba(255,255,255,.3); }
+        .enc-modal__body { padding: 26px 28px; }
+        .enc-modal__foot { padding: 14px 28px 22px; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; justify-content: flex-end; }
+
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+        .minfo label { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: #9ca3af; margin-bottom: 4px; }
+        .minfo span  { font-size: 14px; font-weight: 600; color: #1e293b; }
+        .minfo a     { color: #2563eb; font-size: 13px; text-decoration: none; }
+        .mdivider    { border: none; border-top: 1px solid #f1f5f9; margin: 18px 0; }
+        .motivation-box {
+            background: #f8fafc; padding: 14px 18px; border-radius: 9px;
+            border-left: 3px solid #1a3c6e; font-size: 14px; font-style: italic;
+            color: #475569; line-height: 1.7; margin-bottom: 18px;
+        }
+        .remark-box {
+            background: #fff7ed; padding: 14px 18px; border-radius: 9px;
+            border-left: 3px solid #f59e0b; color: #92400e; font-size: 14px;
+            margin-bottom: 18px;
+        }
+        .flabel { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: #6b7280; margin-bottom: 7px; }
+        .enc-textarea {
+            width: 100%; padding: 11px 15px;
+            border: 1.5px solid #e5e7eb; border-radius: 9px;
+            font-size: 14px; color: #1e293b; font-family: inherit;
+            resize: vertical; min-height: 85px; outline: none;
+            background: #f9fafb; box-sizing: border-box;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .enc-textarea:focus { border-color: #2563eb; background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+        .action-row { display: flex; gap: 10px; margin-top: 14px; }
+
+        /* Messages */
+        .msg-wrap { margin-bottom: 18px; }
+        .msg { display: flex; align-items: center; gap: 10px; padding: 11px 15px; border-radius: 9px; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+        .msg-ok  { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .msg-err { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+        /* Page header */
+        .page-hdr    { margin-bottom: 24px; }
+        .page-hdr h1 { font-size: 24px; font-weight: 800; color: #111827; margin: 0 0 3px; }
+        .page-hdr p  { font-size: 13px; color: #6b7280; margin: 0; }
+    </style>
+</h:head>
+
+<h:body>
+
+    <!-- Rechargement forcé à chaque affichage (Bug 2 fix) -->
+    <f:metadata>
+        <f:event type="preRenderView"
+                 listener="#{candidatureEncadrantBean.onPreRender}"/>
+    </f:metadata>
+
+    <div class="app-layout">
+
+        <!-- SIDEBAR -->
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+            <ui:param name="rolePrefix" value="encadrant"/>
+            <ui:param name="currentPage" value="candidatures"/>
+        </ui:include>
+
+        <!-- MAIN -->
+        <main class="main-content">
+
+            <h:messages id="globalMessages" styleClass="msg-wrap"
+                        infoClass="msg msg-ok" errorClass="msg msg-err"/>
+
+            <div class="page-hdr">
+                <h1>Candidatures Reçues</h1>
+                <p>Consultez et traitez les candidatures reçues pour vos sujets.</p>
             </div>
-            <div class="stat-box">
-                <div class="stat-value">#{candidatureEncadrantBean.candidaturesTraitees}</div>
-                <div class="stat-label">Traitées</div>
+
+            <!-- ── STAT CARDS ─────────────────────────── -->
+            <div class="enc-stats-row">
+                <div class="enc-stat">
+                    <span class="enc-stat__val">#{candidatureEncadrantBean.candidaturesEnAttente}</span>
+                    <span class="enc-stat__lbl">En attente</span>
+                </div>
+                <div class="enc-stat">
+                    <span class="enc-stat__val">#{candidatureEncadrantBean.candidaturesTraitees}</span>
+                    <span class="enc-stat__lbl">Traitées</span>
+                </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <span class="card-title-icon">📋</span>
-                    Liste des candidatures
-                </h2>
-            </div>
+            <!-- ── LISTE ──────────────────────────────── -->
+            <div class="enc-card">
+                <div class="enc-card__head">
+                    <span class="enc-card__icon">📋</span>
+                    <h2 class="enc-card__title">Liste des candidatures</h2>
+                </div>
 
-            <h:form id="listeForm">
-                <h:dataTable value="#{candidatureEncadrantBean.candidatures}"
-                             var="candidature"
-                             styleClass="data-table"
-                             rendered="#{not empty candidatureEncadrantBean.candidatures}">
+                <h:form id="listeForm">
+                    <h:dataTable value="#{candidatureEncadrantBean.candidatures}"
+                                 var="candidature"
+                                 styleClass="enc-table"
+                                 rendered="#{not empty candidatureEncadrantBean.candidatures}">
 
-                    <h:column>
-                        <f:facet name="header">Étudiant(e)</f:facet>
-                        #{candidature.etudiant.nomComplet}
-                    </h:column>
+                        <h:column>
+                            <f:facet name="header">Étudiant(e)</f:facet>
+                            <span class="name-cell">#{candidature.etudiant.nomComplet}</span>
+                        </h:column>
 
-                    <h:column>
-                        <f:facet name="header">Sujet</f:facet>
-                        #{candidature.sujet}
-                    </h:column>
+                        <h:column>
+                            <f:facet name="header">Sujet</f:facet>
+                            <span class="subject-cell">#{candidature.sujet}</span>
+                        </h:column>
 
-                    <h:column>
-                        <f:facet name="header">Date</f:facet>
-                        #{candidatureEncadrantBean.formatDate(candidature.dateCandidature)}
-                    </h:column>
+                        <h:column>
+                            <f:facet name="header">Date</f:facet>
+                            <span class="date-cell">
+                            #{candidatureEncadrantBean.formatDate(candidature.dateCandidature)}
+                        </span>
+                        </h:column>
 
-                    <h:column>
-                        <f:facet name="header">Statut</f:facet>
-                        <span class="badge #{candidatureEncadrantBean.getStatutClass(candidature.statut)}">
+                        <h:column>
+                            <f:facet name="header">Statut</f:facet>
+                            <span class="ebadge ebadge-#{candidatureEncadrantBean.getStatutClass(candidature.statut)}">
                             #{candidature.statut.libelle}
                         </span>
-                    </h:column>
+                        </h:column>
 
-                    <h:column>
-                        <f:facet name="header">Actions</f:facet>
-                        <div class="btn-group">
+                        <h:column>
+                            <f:facet name="header">Actions</f:facet>
                             <h:commandButton value="Voir"
                                              action="#{candidatureEncadrantBean.voirDetails(candidature)}"
-                                             styleClass="btn btn-primary btn-sm">
-                                <f:ajax execute="@this" render=":listeForm :detailsPanel :traitementForm"/>
+                                             styleClass="ebtn ebtn-primary">
+                                <f:ajax execute="@this" render="@all"/>
                             </h:commandButton>
+                        </h:column>
+
+                    </h:dataTable>
+
+                    <!-- Empty state -->
+                    <h:panelGroup rendered="#{empty candidatureEncadrantBean.candidatures}" layout="block">
+                        <div class="enc-empty">
+                            <span class="enc-empty__icon">📭</span>
+                            <h3 class="enc-empty__title">Aucune candidature reçue</h3>
+                            <p class="enc-empty__sub">Les candidatures de vos étudiants apparaîtront ici.</p>
                         </div>
-                    </h:column>
-                </h:dataTable>
-
-                <h:panelGroup rendered="#{empty candidatureEncadrantBean.candidatures}" layout="block">
-                    <div class="empty-state">
-                        Aucune candidature reçue.
-                    </div>
-                </h:panelGroup>
-            </h:form>
-        </div>
-
-        <h:panelGroup id="detailsPanel" layout="block">
-            <h:panelGroup rendered="#{candidatureEncadrantBean.selectedCandidature != null}">
-                <div class="card" style="margin-top: 20px;">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <span class="card-title-icon">🔍</span>
-                            Détails de la candidature
-                        </h2>
-                    </div>
-
-                    <div class="section-grid">
-                        <div>
-                            <div class="info-item">
-                                <span class="info-label">Étudiant(e)</span>
-                                <span class="info-value">#{candidatureEncadrantBean.selectedCandidature.etudiant.nomComplet}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Email</span>
-                                <span class="info-value">#{candidatureEncadrantBean.selectedCandidature.etudiant.email}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Sujet</span>
-                                <span class="info-value">#{candidatureEncadrantBean.selectedCandidature.sujet}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Statut</span>
-                                <span class="info-value">
-                                    <span class="badge #{candidatureEncadrantBean.getStatutClass(candidatureEncadrantBean.selectedCandidature.statut)}">
-                                        #{candidatureEncadrantBean.selectedCandidature.statut.libelle}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="encadrant-box">
-                            <div class="encadrant-header">
-                                <span class="card-title-icon">💬</span>
-                                <h3 class="encadrant-title">Message de motivation</h3>
-                            </div>
-                            <p>#{candidatureEncadrantBean.selectedCandidature.messageMotivation}</p>
-                        </div>
-                    </div>
-
-                    <h:panelGroup rendered="#{candidatureEncadrantBean.canTraiter(candidatureEncadrantBean.selectedCandidature)}" layout="block">
-                        <h:form id="traitementForm">
-                            <div style="margin-top: 20px;">
-                                <div class="form-group">
-                                    <label class="form-label">Votre remarque</label>
-                                    <h:inputTextarea value="#{candidatureEncadrantBean.remarque}" styleClass="form-control" rows="3"/>
-                                </div>
-
-                                <div class="btn-group">
-                                    <h:commandButton value="Accepter" action="#{candidatureEncadrantBean.accepter}" styleClass="btn btn-success">
-                                        <f:ajax execute="@form" render=":listeForm :detailsPanel"/>
-                                    </h:commandButton>
-
-                                    <h:commandButton value="Refuser" action="#{candidatureEncadrantBean.refuser}" styleClass="btn btn-danger">
-                                        <f:ajax execute="@form" render=":listeForm :detailsPanel"/>
-                                    </h:commandButton>
-
-                                    <h:commandButton value="Annuler" action="#{candidatureEncadrantBean.annuler}" styleClass="btn btn-secondary" immediate="true">
-                                        <f:ajax execute="@this" render=":detailsPanel"/>
-                                    </h:commandButton>
-                                </div>
-                            </div>
-                        </h:form>
                     </h:panelGroup>
-                </div>
-            </h:panelGroup>
-        </h:panelGroup>
-    </ui:define>
+                </h:form>
+            </div>
 
-</ui:composition>
+        </main>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         MODAL — Détail + Traitement
+    ══════════════════════════════════════════ -->
+    <h:panelGroup id="modalPanel" layout="block">
+        <h:panelGroup rendered="#{candidatureEncadrantBean.selectedCandidature != null}" layout="block">
+            <div class="enc-modal-bg">
+                <div class="enc-modal">
+
+                    <!-- Head -->
+                    <div class="enc-modal__head">
+                        <div>
+                            <h2>🔍 Détails de la candidature</h2>
+                            <p>#{candidatureEncadrantBean.selectedCandidature.sujet}</p>
+                        </div>
+                        <h:form>
+                            <h:commandButton value="✕" styleClass="enc-modal__close"
+                                             action="#{candidatureEncadrantBean.annuler}"
+                                             immediate="true">
+                                <f:ajax execute="@this" render=":modalPanel"/>
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="enc-modal__body">
+
+                        <div class="modal-grid">
+                            <div class="minfo">
+                                <label>Étudiant(e)</label>
+                                <span>#{candidatureEncadrantBean.selectedCandidature.etudiant.nomComplet}</span>
+                            </div>
+                            <div class="minfo">
+                                <label>Date de candidature</label>
+                                <span>#{candidatureEncadrantBean.formatDate(candidatureEncadrantBean.selectedCandidature.dateCandidature)}</span>
+                            </div>
+                            <div class="minfo">
+                                <label>Email</label>
+                                <a href="mailto:#{candidatureEncadrantBean.selectedCandidature.etudiant.email}">
+                                    #{candidatureEncadrantBean.selectedCandidature.etudiant.email}
+                                </a>
+                            </div>
+                            <div class="minfo">
+                                <label>Statut actuel</label>
+                                <span class="ebadge ebadge-#{candidatureEncadrantBean.getStatutClass(candidatureEncadrantBean.selectedCandidature.statut)}"
+                                      style="margin-top:4px;">
+                                #{candidatureEncadrantBean.selectedCandidature.statut.libelle}
+                            </span>
+                            </div>
+                        </div>
+
+                        <hr class="mdivider"/>
+
+                        <span class="flabel">Message de motivation</span>
+                        <div class="motivation-box">
+                            "#{candidatureEncadrantBean.selectedCandidature.messageMotivation}"
+                        </div>
+
+                        <h:panelGroup rendered="#{not empty candidatureEncadrantBean.selectedCandidature.remarqueEncadrant}"
+                                      layout="block">
+                            <span class="flabel">Votre remarque précédente</span>
+                            <div class="remark-box">
+                                #{candidatureEncadrantBean.selectedCandidature.remarqueEncadrant}
+                            </div>
+                        </h:panelGroup>
+
+                        <!-- Actions si EN_ATTENTE -->
+                        <h:panelGroup rendered="#{candidatureEncadrantBean.canTraiter(candidatureEncadrantBean.selectedCandidature)}"
+                                      layout="block">
+                            <hr class="mdivider"/>
+                            <h:form id="traitementForm">
+                            <span class="flabel">
+                                Remarque à l'étudiant
+                                <span style="color:#9ca3af;font-weight:400;">(optionnel)</span>
+                            </span>
+                                <h:inputTextarea value="#{candidatureEncadrantBean.remarque}"
+                                                 styleClass="enc-textarea"
+                                                 placeholder="Ex: Veuillez me contacter pour discuter de votre candidature..."/>
+                                <div class="action-row">
+                                    <h:commandButton value="✔ Accepter"
+                                                     action="#{candidatureEncadrantBean.accepter}"
+                                                     styleClass="ebtn ebtn-success">
+                                        <f:ajax execute="@form" render="@all"/>
+                                    </h:commandButton>
+                                    <h:commandButton value="✖ Refuser"
+                                                     action="#{candidatureEncadrantBean.refuser}"
+                                                     styleClass="ebtn ebtn-danger"
+                                                     onclick="return confirm('Confirmer le refus ?');">
+                                        <f:ajax execute="@form" render="@all"/>
+                                    </h:commandButton>
+
+                                    <!-- Bouton Fermer modal -->
+                                    <h:commandButton value="✕" styleClass="enc-modal__close"
+                                                     action="#{candidatureEncadrantBean.annuler}"
+                                                     immediate="true">
+                                        <f:ajax execute="@this" render="@all"/>
+                                    </h:commandButton>
+
+                                </div>
+                            </h:form>
+                        </h:panelGroup>
+
+                    </div>
+
+                    <!-- Footer si déjà traitée -->
+                    <h:panelGroup rendered="#{!candidatureEncadrantBean.canTraiter(candidatureEncadrantBean.selectedCandidature)}"
+                                  layout="block">
+                        <div class="enc-modal__foot">
+                            <h:form>
+                                <!-- Bouton Fermer footer -->
+                                <h:commandButton value="Fermer"
+                                                 action="#{candidatureEncadrantBean.annuler}"
+                                                 styleClass="ebtn ebtn-ghost"
+                                                 immediate="true">
+                                    <f:ajax execute="@this" render="@all"/>
+                                </h:commandButton>
+                            </h:form>
+                        </div>
+                    </h:panelGroup>
+
+                </div>
+            </div>
+        </h:panelGroup>
+    </h:panelGroup>
+
+</h:body>
+</html>

@@ -4,6 +4,7 @@ import org.pfemanager.enums.StatutProjet;
 import org.pfemanager.model.Projet;
 import org.pfemanager.model.Commentaire;
 import org.pfemanager.model.Document;
+import org.pfemanager.model.Utilisateur;
 import org.pfemanager.service.ProjetService;
 import org.pfemanager.service.DocumentService;
 
@@ -34,7 +35,7 @@ public class ProjetEtudiantBean implements Serializable {
     private DocumentService documentService;
 
     @Inject
-    private TestModuleBean testModuleBean;
+    private AuthBean authBean;
 
     private Projet projet;
     private List<Commentaire> commentaires;
@@ -50,11 +51,10 @@ public class ProjetEtudiantBean implements Serializable {
     }
 
     public void loadProjet() {
-        if (testModuleBean.getCurrentUser() != null) {
-            projet = projetService.getProjetByEtudiant(
-                    testModuleBean.getCurrentUser().getId()
-            ).orElse(null);
-
+        Utilisateur user = authBean.getUtilisateurConnecte();
+        if (user != null) {
+            projet = projetService.getProjetByEtudiant(user.getId())
+                    .orElse(null);
             if (projet != null) {
                 commentaires = projetService.getCommentaires(projet.getId());
                 documents = documentService.getDocumentsByProjet(projet.getId());
@@ -64,24 +64,22 @@ public class ProjetEtudiantBean implements Serializable {
 
     // Déposer un document (simulation)
     public void deposerDocument() {
-        if (projet != null && nomDocument != null && !nomDocument.trim().isEmpty()) {
+        Utilisateur user = authBean.getUtilisateurConnecte();
+        if (projet != null && nomDocument != null
+                && !nomDocument.trim().isEmpty() && user != null) {
             Document doc = new Document();
             doc.setNomFichier(nomDocument);
             doc.setTypeFichier(typeDocument != null ? typeDocument : "pdf");
-            doc.setDepositaire(testModuleBean.getCurrentUser());
+            doc.setDepositaire(user);
             doc.setProjet(projet);
-            doc.setTaille(1024L * 512); // Taille simulée : 512 KB
-
+            doc.setTaille(1024L * 512);
             documentService.create(doc);
-
-            addMessage(FacesMessage.SEVERITY_INFO, "Document déposé avec succès");
-
+            addMessage(FacesMessage.SEVERITY_INFO, "Document déposé avec succès.");
             nomDocument = null;
             typeDocument = null;
-
             documents = documentService.getDocumentsByProjet(projet.getId());
         } else {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Veuillez saisir un nom de document");
+            addMessage(FacesMessage.SEVERITY_ERROR, "Veuillez saisir un nom de document.");
         }
     }
 

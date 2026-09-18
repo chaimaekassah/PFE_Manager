@@ -1,9 +1,7 @@
 package org.pfemanager.enums;
 
-/**
- * Énumération des statuts de candidature
- */
 public enum StatutCandidature {
+
     EN_ATTENTE("En attente"),
     ACCEPTEE("Acceptée"),
     REFUSEE("Refusée"),

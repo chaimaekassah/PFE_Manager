@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>PFE Manager – Postuler</title>
+    <h:outputStylesheet name="css/style.css"/>
+    <h:outputStylesheet name="css/dashboard.css"/>
+</h:head>
+
+<h:body>
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+            <ui:param name="rolePrefix" value="etudiant"/>
+            <ui:param name="currentPage" value="sujets"/>
+        </ui:include>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <f:metadata>
+                <f:viewParam name="sujetId" />
+                <f:viewAction action="#{candidatureEtudiantBean.preparerCandidature(param['sujetId'])}"/>
+            </f:metadata>
+
+            <div class="content-header">
+                <h1>Soumettre une candidature</h1>
+                <p>Exprimez votre intérêt pour le sujet choisi auprès de l'encadrant.</p>
+            </div>
+
+            <h:messages styleClass="messages"
+                        infoClass="message message-info"
+                        errorClass="message message-error"/>
+
+            <div class="data-card" style="margin-bottom: 24px;">
+                <div class="data-card-header">
+                    <span class="card-title-icon">📘</span>
+                    <h2 class="data-card-title">Détails du sujet choisi</h2>
+                </div>
+                <div class="data-card-content">
+                    <div class="content-grid">
+                        <div>
+                            <div class="modern-info-item">
+                                <span class="modern-info-label">Titre du sujet</span>
+                                <span class="modern-info-value" style="font-size: 1.1rem; color: #1e3a8a;">
+                                    #{candidatureEtudiantBean.sujetSelectionne.titre}
+                                </span>
+                            </div>
+                            <div class="modern-info-item">
+                                <span class="modern-info-label">Encadrant</span>
+                                <span class="modern-info-value">#{candidatureEtudiantBean.sujetSelectionne.encadrant.nomComplet}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="modern-info-item">
+                                <span class="modern-info-label">Technologies</span>
+                                <span class="modern-info-value">#{candidatureEtudiantBean.sujetSelectionne.technologiesRequises}</span>
+                            </div>
+                            <div class="modern-info-item">
+                                <span class="modern-info-label">Capacité</span>
+                                <span class="modern-info-value">#{candidatureEtudiantBean.sujetSelectionne.nombreMaxEtudiants} étudiant(s)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-card">
+                <div class="data-card-header">
+                    <span class="card-title-icon">✍️</span>
+                    <h2 class="data-card-title">Votre motivation</h2>
+                </div>
+                <div class="data-card-content">
+                    <h:form id="postulerForm">
+                        <div class="form-group">
+                            <label class="form-label">Message de motivation <span style="color: #ef4444;">*</span></label>
+                            <h:inputTextarea value="#{candidatureEtudiantBean.messageMotivation}"
+                                             styleClass="form-control"
+                                             required="true"
+                                             requiredMessage="Veuillez saisir votre motivation."
+                                             rows="8"
+                                             placeholder="Décrivez votre intérêt et vos compétences pour ce sujet..."/>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 24px;">
+                            <h:commandButton value="🚀 Envoyer ma candidature"
+                                             action="#{candidatureEtudiantBean.postuler}"
+                                             styleClass="btn btn-primary">
+                                <f:param name="sujetId" value="#{param['sujetId']}"/>
+                            </h:commandButton>
+
+                            <h:link outcome="/etudiant/sujet-detail.xhtml" styleClass="btn-outline">
+                                <f:param name="id" value="#{param['sujetId']}"/>
+                                Annuler
+                            </h:link>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </main>
+    </div>
+</h:body>
+</html>

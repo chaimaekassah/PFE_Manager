@@ -3,7 +3,7 @@ package org.pfemanager.service;
 import org.pfemanager.enums.StatutProjet;
 import org.pfemanager.model.Commentaire;
 import org.pfemanager.model.Projet;
-import org.pfemanager.model.User;
+import org.pfemanager.model.Utilisateur; // ✅ Utilisateur au lieu de User
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -12,12 +12,11 @@ import jakarta.transaction.Transactional;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-@Transactional // WildFly gère les transactions automatiquement
+@Transactional
 public class ProjetService implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,7 +25,8 @@ public class ProjetService implements Serializable {
     private EntityManager em;
 
     public List<Projet> getAll() {
-        return em.createQuery("SELECT p FROM Projet p ORDER BY p.id", Projet.class)
+        return em.createQuery(
+                        "SELECT p FROM Projet p ORDER BY p.id", Projet.class)
                 .getResultList();
     }
 
@@ -36,7 +36,8 @@ public class ProjetService implements Serializable {
 
     public Optional<Projet> getProjetByEtudiant(Long etudiantId) {
         List<Projet> result = em.createQuery(
-                        "SELECT p FROM Projet p WHERE p.etudiant.id = :id ORDER BY p.id", Projet.class)
+                        "SELECT p FROM Projet p WHERE p.etudiant.id = :id ORDER BY p.id",
+                        Projet.class)
                 .setParameter("id", etudiantId)
                 .getResultList();
         return result.stream().findFirst();
@@ -44,7 +45,8 @@ public class ProjetService implements Serializable {
 
     public List<Projet> getProjetsByEncadrant(Long encadrantId) {
         return em.createQuery(
-                        "SELECT p FROM Projet p WHERE p.encadrant.id = :id ORDER BY p.id", Projet.class)
+                        "SELECT p FROM Projet p WHERE p.encadrant.id = :id ORDER BY p.id",
+                        Projet.class)
                 .setParameter("id", encadrantId)
                 .getResultList();
     }
@@ -75,9 +77,11 @@ public class ProjetService implements Serializable {
         if (projet != null) em.remove(projet);
     }
 
-    public void ajouterCommentaire(Long projetId, User auteur, String contenu) {
+    // ✅ Utilisateur au lieu de User
+    public void ajouterCommentaire(Long projetId, Utilisateur auteur, String contenu) {
         Projet projet = em.find(Projet.class, projetId);
-        if (projet != null && auteur != null && contenu != null && !contenu.trim().isEmpty()) {
+        if (projet != null && auteur != null
+                && contenu != null && !contenu.trim().isEmpty()) {
             Commentaire commentaire = new Commentaire();
             commentaire.setAuteur(auteur);
             commentaire.setContenu(contenu);
@@ -89,7 +93,8 @@ public class ProjetService implements Serializable {
 
     public List<Commentaire> getCommentaires(Long projetId) {
         return em.createQuery(
-                        "SELECT c FROM Commentaire c WHERE c.projet.id = :id ORDER BY c.dateCreation DESC",
+                        "SELECT c FROM Commentaire c WHERE c.projet.id = :id " +
+                                "ORDER BY c.dateCreation DESC",
                         Commentaire.class)
                 .setParameter("id", projetId)
                 .getResultList();

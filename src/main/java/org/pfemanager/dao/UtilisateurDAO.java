@@ -25,8 +25,8 @@ public class UtilisateurDAO {
      * Pour la connexion (Sign In)
      */
     public Optional<Utilisateur> findByEmail(String email) {
-        return em.createQuery("SELECT u FROM Utilisateur u WHERE u.email = :email", Utilisateur.class)
-                .setParameter("email", email)
+        return em.createQuery("SELECT u FROM Utilisateur u WHERE LOWER(u.email) = LOWER(:email)", Utilisateur.class)
+                .setParameter("email", email.trim())
                 .getResultStream()
                 .findFirst();
     }

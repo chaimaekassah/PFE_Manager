@@ -24,8 +24,21 @@ public class AuthService {
 
         Utilisateur utilisateur = optUtilisateur.get();
 
-        // Vérifie le mot de passe avec BCrypt
-        if (!PasswordUtil.verifier(motDePasse, utilisateur.getMotDePasse())) {
+        // Vérifie le mot de passe avec BCrypt ou en clair
+        boolean isMatch = false;
+        try {
+            isMatch = PasswordUtil.verifier(motDePasse, utilisateur.getMotDePasse());
+        } catch (IllegalArgumentException e) {
+            // Hash invalide (peut-être en texte clair)
+            if (motDePasse.equals(utilisateur.getMotDePasse())) {
+                isMatch = true;
+                // Mettre à jour avec le hash
+                utilisateur.setMotDePasse(PasswordUtil.hasher(motDePasse));
+                utilisateurDAO.update(utilisateur);
+            }
+        }
+
+        if (!isMatch) {
             return null;
         }
 
@@ -43,6 +56,11 @@ public class AuthService {
         // Hasher le mot de passe avant de sauvegarder
         String motDePasseHashe = PasswordUtil.hasher(utilisateur.getMotDePasse());
         utilisateur.setMotDePasse(motDePasseHashe);
+
+        // S'assurer que le statut est défini (sécurité, au cas où l'appelant ne l'a pas fait)
+        if (utilisateur.getStatut() == null || utilisateur.getStatut().isEmpty()) {
+            utilisateur.setStatut("ACTIF");
+        }
 
         // save() au lieu de sauvegarder()
         utilisateurDAO.save(utilisateur);

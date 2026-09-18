@@ -5,19 +5,20 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 <h:head>
-    <title>PFE Manager</title>
+    <title><ui:insert name="title">PFE Manager</ui:insert></title>
     <h:outputStylesheet library="css" name="style.css" />
     <h:outputStylesheet library="css" name="dashboard.css" />
     <h:outputStylesheet library="css" name="sujets.css" />
+    <h:outputStylesheet library="css" name="suivi-projet.css" />
 </h:head>
 
 <h:body>
-    <div class="app-container">
-        <ui:include src="/WEB-INF/templates/sidebar.xhtml" />
+    <ui:include src="/WEB-INF/templates/sidebar.xhtml">
+        <ui:param name="currentPage" value="#{currentPage}"/>
+    </ui:include>
 
-        <main class="main-content">
-            <ui:insert name="content" />
-        </main>
+    <div class="page-wrapper">
+        <ui:insert name="content" />
     </div>
 </h:body>
 </html>

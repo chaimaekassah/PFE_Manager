@@ -6,9 +6,6 @@ import org.pfemanager.enums.StatutCandidature;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * Classe représentant une candidature d'étudiant(e) à un projet
- */
 @Entity
 @Table(name = "candidatures")
 public class Candidature implements Serializable {
@@ -21,11 +18,11 @@ public class Candidature implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "etudiant_id")
-    private User etudiant;
+    private Utilisateur etudiant;   // ✅ Utilisateur au lieu de User
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "encadrant_id")
-    private User encadrant;
+    private Utilisateur encadrant; // ✅ Utilisateur au lieu de User
 
     @Column(nullable = false)
     private String sujet;
@@ -51,7 +48,8 @@ public class Candidature implements Serializable {
         this.statut = StatutCandidature.EN_ATTENTE;
     }
 
-    public Candidature(Long id, User etudiant, User encadrant, String sujet, String messageMotivation) {
+    public Candidature(Long id, Utilisateur etudiant, Utilisateur encadrant,
+                       String sujet, String messageMotivation) {
         this();
         this.id = id;
         this.etudiant = etudiant;
@@ -62,94 +60,43 @@ public class Candidature implements Serializable {
 
     @PrePersist
     public void prePersist() {
-        if (dateCandidature == null) {
-            dateCandidature = LocalDateTime.now();
-        }
-        if (statut == null) {
-            statut = StatutCandidature.EN_ATTENTE;
-        }
+        if (dateCandidature == null) dateCandidature = LocalDateTime.now();
+        if (statut == null) statut = StatutCandidature.EN_ATTENTE;
     }
 
-    public Long getId() {
-        return id;
-    }
+    // ── Getters / Setters ──────────────────────────────────
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Utilisateur getEtudiant() { return etudiant; }
+    public void setEtudiant(Utilisateur etudiant) { this.etudiant = etudiant; }
 
-    public User getEtudiant() {
-        return etudiant;
-    }
+    public Utilisateur getEncadrant() { return encadrant; }
+    public void setEncadrant(Utilisateur encadrant) { this.encadrant = encadrant; }
 
-    public void setEtudiant(User etudiant) {
-        this.etudiant = etudiant;
-    }
+    public String getSujet() { return sujet; }
+    public void setSujet(String sujet) { this.sujet = sujet; }
 
-    public User getEncadrant() {
-        return encadrant;
-    }
+    public String getMessageMotivation() { return messageMotivation; }
+    public void setMessageMotivation(String m) { this.messageMotivation = m; }
 
-    public void setEncadrant(User encadrant) {
-        this.encadrant = encadrant;
-    }
+    public StatutCandidature getStatut() { return statut; }
+    public void setStatut(StatutCandidature statut) { this.statut = statut; }
 
-    public String getSujet() {
-        return sujet;
-    }
+    public String getRemarqueEncadrant() { return remarqueEncadrant; }
+    public void setRemarqueEncadrant(String r) { this.remarqueEncadrant = r; }
 
-    public void setSujet(String sujet) {
-        this.sujet = sujet;
-    }
+    public LocalDateTime getDateCandidature() { return dateCandidature; }
+    public void setDateCandidature(LocalDateTime d) { this.dateCandidature = d; }
 
-    public String getMessageMotivation() {
-        return messageMotivation;
-    }
-
-    public void setMessageMotivation(String messageMotivation) {
-        this.messageMotivation = messageMotivation;
-    }
-
-    public StatutCandidature getStatut() {
-        return statut;
-    }
-
-    public void setStatut(StatutCandidature statut) {
-        this.statut = statut;
-    }
-
-    public String getRemarqueEncadrant() {
-        return remarqueEncadrant;
-    }
-
-    public void setRemarqueEncadrant(String remarqueEncadrant) {
-        this.remarqueEncadrant = remarqueEncadrant;
-    }
-
-    public LocalDateTime getDateCandidature() {
-        return dateCandidature;
-    }
-
-    public void setDateCandidature(LocalDateTime dateCandidature) {
-        this.dateCandidature = dateCandidature;
-    }
-
-    public LocalDateTime getDateReponse() {
-        return dateReponse;
-    }
-
-    public void setDateReponse(LocalDateTime dateReponse) {
-        this.dateReponse = dateReponse;
-    }
+    public LocalDateTime getDateReponse() { return dateReponse; }
+    public void setDateReponse(LocalDateTime d) { this.dateReponse = d; }
 
     @Override
     public String toString() {
-        return "Candidature{" +
-                "id=" + id +
-                ", etudiant=" + (etudiant != null ? etudiant.getNomComplet() : "null") +
-                ", encadrant=" + (encadrant != null ? encadrant.getNomComplet() : "null") +
-                ", sujet='" + sujet + '\'' +
-                ", statut=" + statut +
-                '}';
+        return "Candidature{id=" + id
+                + ", etudiant=" + (etudiant != null ? etudiant.getNom() : "null")
+                + ", sujet='" + sujet + "'"
+                + ", statut=" + statut + "}";
     }
 }

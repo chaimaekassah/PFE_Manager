@@ -91,7 +91,7 @@ public class ProfilBean implements Serializable {
 
         // Vérifier le type
         String contentType = photoPart.getContentType();
-        if (!contentType.startsWith("image/")) {
+        if (contentType == null || !contentType.startsWith("image/")) {
             messageErreur = "Seules les images sont acceptées (JPG, PNG).";
             return;
         }
@@ -108,11 +108,26 @@ public class ProfilBean implements Serializable {
 
             // Dossier de stockage des photos
             String uploadDir = ec.getRealPath("/resources/photos/");
+            if (uploadDir == null) {
+                // Fallback for WAR deployments where getRealPath can return null
+                messageErreur = "Le serveur ne supporte pas l'écriture directe dans l'application. Contactez l'administrateur.";
+                return;
+            }
             Files.createDirectories(Paths.get(uploadDir));
 
-            // Nom de fichier unique par utilisateur
+            // Supprimer l'ancienne photo si elle existe
+            if (u.getPhoto() != null && !u.getPhoto().isEmpty()) {
+                Path oldPhoto = Paths.get(ec.getRealPath("/"), u.getPhoto());
+                try {
+                    Files.deleteIfExists(oldPhoto);
+                } catch (IOException e) {
+                    // Silently ignore deletion errors
+                }
+            }
+
+            // Nom de fichier unique avec timestamp pour éviter le cache navigateur
             String ext = contentType.contains("png") ? ".png" : ".jpg";
-            String fileName = "user_" + u.getId() + ext;
+            String fileName = "user_" + u.getId() + "_" + System.currentTimeMillis() + ext;
             Path dest = Paths.get(uploadDir, fileName);
 
             try (InputStream is = photoPart.getInputStream()) {
@@ -124,8 +139,9 @@ public class ProfilBean implements Serializable {
             utilisateurDAO.update(u);
 
             messageSucces = "Photo mise à jour avec succès !";
-        } catch (IOException e) {
+        } catch (Exception e) {
             messageErreur = "Erreur lors de l'upload : " + e.getMessage();
+            e.printStackTrace();
         }
     }
 

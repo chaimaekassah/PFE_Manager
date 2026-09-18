@@ -100,4 +100,8 @@ public class TestModuleBean implements Serializable {
     public void setSelectedUserId(Long selectedUserId) {
         this.selectedUserId = selectedUserId;
     }
+
+    public List<User> getUtilisateurs() {
+        return userService.getAllUsersIncludingDeleted();
+    }
 }

@@ -28,9 +28,9 @@ public class Document implements Serializable {
     @Column(name = "date_depot")
     private LocalDateTime dateDepot;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "depositaire_id")
-    private User depositaire;
+    private Utilisateur depositaire;
 
     @ManyToOne
     @JoinColumn(name = "projet_id")
@@ -99,13 +99,8 @@ public class Document implements Serializable {
         this.dateDepot = dateDepot;
     }
 
-    public User getDepositaire() {
-        return depositaire;
-    }
-
-    public void setDepositaire(User depositaire) {
-        this.depositaire = depositaire;
-    }
+    public Utilisateur getDepositaire() { return depositaire; }
+    public void setDepositaire(Utilisateur d) { this.depositaire = d; }
 
     public Projet getProjet() {
         return projet;

@@ -10,72 +10,180 @@
     <ui:param name="currentPage" value="suivi-projet" />
 
     <ui:define name="content">
-        <div class="content-header">
-            <h1>Suivi de mon Projet</h1>
-            <p>Consultez les informations principales de votre projet affecté.</p>
-        </div>
+        <!-- ── Inline CSS for critical premium overhaul ── -->
+        <style>
+            .st-hero {
+                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+                border-radius: 20px !important;
+                padding: 38px 42px !important;
+                color: #ffffff !important;
+                margin-bottom: 32px !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                box-shadow: 0 15px 35px rgba(15, 23, 42, 0.25) !important;
+            }
+            .st-hero * { color: #ffffff !important; }
+            .st-hero__title { font-size: 28px !important; font-weight: 900 !important; margin: 0 0 12px !important; }
+
+            .st-card {
+                background: #ffffff !important;
+                border-radius: 20px !important;
+                border: 1px solid #eef2f6 !important;
+                padding: 32px !important;
+                margin-bottom: 28px !important;
+                box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.04) !important;
+            }
+
+            .st-section-title {
+                font-size: 16px !important;
+                font-weight: 800 !important;
+                color: #0f172a !important;
+                margin-bottom: 24px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+            }
+
+            .st-label {
+                display: block !important;
+                font-size: 11px !important;
+                font-weight: 800 !important;
+                color: #94a3b8 !important;
+                text-transform: uppercase !important;
+                margin-bottom: 8px !important;
+            }
+
+            .st-value {
+                font-size: 16px !important;
+                color: #1e293b !important;
+                font-weight: 700 !important;
+            }
+
+            .st-stat-badge {
+                padding: 8px 18px !important;
+                border-radius: 99px !important;
+                font-size: 13px !important;
+                font-weight: 800 !important;
+            }
+            .st-stat-badge--statut-en-cours { background: #2563eb !important; color: #ffffff !important; }
+            .st-stat-badge--statut-valide   { background: #16a34a !important; color: #ffffff !important; }
+            .st-stat-badge--statut-termine  { background: #7c3aed !important; color: #ffffff !important; }
+
+            .st-desc {
+                background: #f8fafc !important;
+                padding: 20px !important;
+                border-radius: 14px !important;
+                border-left: 5px solid #3b82f6 !important;
+            }
+        </style>
+
+        <h:panelGroup layout="block" styleClass="sp-page-hdr">
+            <h1>🚀 Mon Espace Projet</h1>
+            <p>Pilotez votre projet et suivez les retours de votre encadrant en temps réel.</p>
+        </h:panelGroup>
+
+        <h:messages id="messages" globalOnly="true" styleClass="sp-msg-wrap"
+                    infoClass="sp-msg sp-msg-ok" errorClass="sp-msg sp-msg-err"/>
 
         <h:panelGroup rendered="#{projetEtudiantBean.projet != null}" layout="block">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <span class="card-title-icon">📁</span>
-                        Informations du projet
-                    </h2>
-                </div>
 
-                <div class="section-grid">
-                    <div>
-                        <div class="info-item">
-                            <span class="info-label">Sujet</span>
-                            <span class="info-value">#{projetEtudiantBean.projet.sujet}</span>
-                        </div>
-
-                        <div class="info-item">
-                            <span class="info-label">Encadrant(e)</span>
-                            <span class="info-value">#{projetEtudiantBean.projet.encadrant.nomComplet}</span>
-                        </div>
-
-                        <div class="info-item">
-                            <span class="info-label">Date de début</span>
-                            <span class="info-value">#{projetEtudiantBean.formatDate(projetEtudiantBean.projet.dateDebut)}</span>
-                        </div>
-
-                        <div class="info-item">
-                            <span class="info-label">Date de fin</span>
-                            <span class="info-value">#{projetEtudiantBean.formatDate(projetEtudiantBean.projet.dateFin)}</span>
-                        </div>
-                    </div>
-
-                    <div class="encadrant-box">
-                        <div class="encadrant-header">
-                            <span class="card-title-icon">📌</span>
-                            <h3 class="encadrant-title">Statut du projet</h3>
-                        </div>
-
-                        <div class="status-bar #{projetEtudiantBean.getStatutProjetClass(projetEtudiantBean.projet.statut)}">
+            <h:panelGroup layout="block" styleClass="st-hero">
+                <h:panelGroup layout="block" styleClass="st-hero__content">
+                    <h2 class="st-hero__title">#{projetEtudiantBean.projet.sujet}</h2>
+                    <h:panelGroup layout="block" styleClass="st-hero__status-wrap">
+                        <span class="st-stat-badge st-stat-badge--#{projetEtudiantBean.getStatutProjetClass(projetEtudiantBean.projet.statut)}">
                             #{projetEtudiantBean.projet.statut.libelle}
+                        </span>
+                        <span style="opacity: 0.9; font-size: 14px; font-weight: 600;">
+                            Progression :
+                            <h:panelGroup rendered="#{projetEtudiantBean.projet.statut.name() == 'EN_COURS'}">45%</h:panelGroup>
+                            <h:panelGroup rendered="#{projetEtudiantBean.projet.statut.name() == 'VALIDE'}">80%</h:panelGroup>
+                            <h:panelGroup rendered="#{projetEtudiantBean.projet.statut.name() == 'TERMINE'}">100%</h:panelGroup>
+                        </span>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="st-hero__progress-box">
+                    <h:panelGroup layout="block" styleClass="sp-progress-bar" style="height: 14px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.1);">
+                        <h:panelGroup layout="block"
+                                      styleClass="sp-progress-fill sp-progress-fill--#{projetEtudiantBean.getStatutProjetClass(projetEtudiantBean.projet.statut)} sp-progress-fill--statut-#{projetEtudiantBean.getStatutProjetClass(projetEtudiantBean.projet.statut)}">
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup layout="block" styleClass="sp-detail-grid" style="padding: 0; gap: 24px; align-items: start;">
+
+                <h:panelGroup layout="block" styleClass="st-card">
+                    <h2 class="st-section-title"><span>📂</span> Détails du Projet</h2>
+                    <div class="st-info-grid">
+                        <div class="st-info-item">
+                            <span class="st-label">Date de début</span>
+                            <span class="st-value">#{projetEtudiantBean.formatDate(projetEtudiantBean.projet.dateDebut)}</span>
+                        </div>
+                        <div class="st-info-item">
+                            <span class="st-label">Fin prévue</span>
+                            <span class="st-value">
+                                <h:panelGroup rendered="#{projetEtudiantBean.projet.dateFin != null}">
+                                    #{projetEtudiantBean.formatDate(projetEtudiantBean.projet.dateFin)}
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{projetEtudiantBean.projet.dateFin == null}">
+                                    <span style="color: #94a3b8;">—</span>
+                                </h:panelGroup>
+                            </span>
                         </div>
                     </div>
-                </div>
-            </div>
+                    <div class="st-separator" style="height: 1px; background: #f1f5f9; margin: 28px 0;"></div >
+                    <div class="st-info-item">
+                        <span class="st-label">Description du PFE</span>
+                        <h:panelGroup layout="block" styleClass="st-desc" style="margin-top: 10px;">
+                            #{not empty projetEtudiantBean.projet.description ? projetEtudiantBean.projet.description : 'Aucune description détaillée.'}
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" style="display: flex; flex-direction: column; gap: 24px;">
+                    <h:panelGroup layout="block" styleClass="st-card">
+                        <h2 class="st-section-title"><span>👤</span> Mon Encadrant</h2>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="sp-comment-avatar">#{projetEtudiantBean.projet.encadrant.nomComplet.substring(0,1)}</div>
+                            <div>
+                                <span class="st-value" style="display: block;">#{projetEtudiantBean.projet.encadrant.nomComplet}</span>
+                                <span class="st-label" style="text-transform: none; font-size: 12px; margin: 0;">📧 #{projetEtudiantBean.projet.encadrant.email}</span>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup layout="block" styleClass="st-card">
+                        <h2 class="st-section-title"><span>💬</span> Retours d'encadrement</h2>
+                        <h:panelGroup rendered="#{not empty projetEtudiantBean.commentaires}" layout="block" styleClass="st-comment-feed">
+                            <ui:repeat value="#{projetEtudiantBean.commentaires}" var="comment">
+                                <h:panelGroup layout="block" styleClass="st-comment-bubble" style="padding: 20px; background: #f8fafc; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f1f5f9;">
+                                    <span class="st-comment-author" style="font-size: 13px; font-weight: 800; display: block; margin-bottom: 8px;">
+                                        #{comment.auteur.nomComplet}
+                                        <span class="st-comment-date" style="font-size: 11px; color: #94a3b8; font-weight: 600; margin-left: 10px;">• #{projetEtudiantBean.formatDate(comment.dateCreation)}</span>
+                                    </span>
+                                    <div class="st-comment-text">#{comment.contenu}</div>
+                                </h:panelGroup>
+                            </ui:repeat>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{empty projetEtudiantBean.commentaires}" layout="block">
+                            <div style="text-align: center; padding: 10px 0;">
+                                <span style="font-size: 32px; display: block; margin-bottom: 12px; opacity: 0.3;">📝</span>
+                                <p style="font-size: 13px; color: #94a3b8; margin: 0;">Aucun commentaire pour le moment.</p>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
         </h:panelGroup>
 
         <h:panelGroup rendered="#{projetEtudiantBean.projet == null}" layout="block">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <span class="card-title-icon">📁</span>
-                        Informations du projet
-                    </h2>
-                </div>
-
-                <div class="empty-state">
-                    Aucun projet affecté pour le moment.
-                </div>
-            </div>
+            <h:panelGroup layout="block" styleClass="st-empty-state">
+                <span class="st-empty-state__icon">📁</span>
+                <h3 class="st-empty-state__title">Aucun projet affecté</h3>
+                <p style="font-size: 15px; max-width: 460px; margin: 0 auto; line-height: 1.6;">Votre espace projet sera activé bientôt.</p>
+            </h:panelGroup>
         </h:panelGroup>
-
     </ui:define>
-
 </ui:composition>

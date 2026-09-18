@@ -5,168 +5,409 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <ui:define name="title">Projets Encadrés - PFE Manager</ui:define>
+    <ui:define name="title">Suivi Projet – PFE Manager</ui:define>
 
     <ui:param name="currentPage" value="suivi-projet" />
 
     <ui:define name="content">
-        <div class="content-header">
-            <h1>Projets Encadrés</h1>
-            <p>Consultez et suivez les projets que vous encadrez.</p>
+
+        <!-- ══════════════════════════════════════
+             PAGE HEADER
+        ══════════════════════════════════════ -->
+        <div class="sp-page-hdr">
+            <h1>&#x1F4CA; Suivi des Projets Encadrés</h1>
+            <p>Consultez, filtrez et gérez l'avancement des projets de vos étudiants.</p>
         </div>
 
-        <h:messages styleClass="messages"
-                    infoClass="info-message"
-                    errorClass="error-message"/>
+        <!-- Messages -->
+        <h:messages styleClass="sp-msg-wrap"
+                    infoClass="sp-msg sp-msg-ok"
+                    errorClass="sp-msg sp-msg-err"/>
 
-        <div class="stats-container">
-            <div class="stat-box">
-                <div class="stat-value">#{projetEncadrantBean.projetsEnCours}</div>
-                <div class="stat-label">Projets en cours</div>
+        <!-- ══════════════════════════════════════
+             STAT CARDS
+        ══════════════════════════════════════ -->
+        <div class="sp-stats-row">
+            <div class="sp-stat">
+                <span class="sp-stat__icon">&#x1F4C1;</span>
+                <div class="sp-stat__body">
+                    <span class="sp-stat__val">#{projetEncadrantBean.projets.size()}</span>
+                    <span class="sp-stat__lbl">Total projets</span>
+                </div>
+            </div>
+            <div class="sp-stat sp-stat--orange">
+                <span class="sp-stat__icon">&#x2699;&#xFE0F;</span>
+                <div class="sp-stat__body">
+                    <span class="sp-stat__val">#{projetEncadrantBean.projetsEnCours}</span>
+                    <span class="sp-stat__lbl">En cours</span>
+                </div>
+            </div>
+            <div class="sp-stat sp-stat--green">
+                <span class="sp-stat__icon">&#x2705;</span>
+                <div class="sp-stat__body">
+                    <span class="sp-stat__val">#{projetEncadrantBean.projets.size() - projetEncadrantBean.projetsEnCours}</span>
+                    <span class="sp-stat__lbl">Terminés / Validés</span>
+                </div>
             </div>
         </div>
 
-        <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet == null}">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <span class="card-title-icon">📋</span>
-                        Liste des projets
-                    </h2>
+        <!-- ══════════════════════════════════════
+             LIST VIEW
+        ══════════════════════════════════════ -->
+        <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet == null}" layout="block">
+
+            <!-- Search + filter toolbar -->
+            <div class="sp-toolbar">
+                <div class="sp-search-wrap">
+                    <span class="sp-search-icon">&#x1F50D;</span>
+                    <input id="sp-search"
+                           type="text"
+                           class="sp-search-input"
+                           placeholder="Rechercher par étudiant ou sujet…"
+                           oninput="filterProjects(this.value)"/>
+                </div>
+                <select id="sp-filter-status"
+                        class="sp-filter-select"
+                        onchange="filterByStatus(this.value)">
+                    <option value="">Tous les statuts</option>
+                    <option value="en cours">En cours</option>
+                    <option value="validé">Validé</option>
+                    <option value="terminé">Terminé</option>
+                </select>
+            </div>
+
+            <!-- Projects table card -->
+            <div class="sp-card">
+                <div class="sp-card__head">
+                    <span class="sp-card__icon">&#x1F4CB;</span>
+                    <h2 class="sp-card__title">Liste des projets encadrés</h2>
                 </div>
 
                 <h:form id="listeProjetsForm">
-                    <h:dataTable value="#{projetEncadrantBean.projets}"
-                                 var="projet"
-                                 styleClass="data-table"
-                                 rendered="#{not empty projetEncadrantBean.projets}">
+                    <h:panelGroup rendered="#{not empty projetEncadrantBean.projets}" layout="block">
+                        <table class="sp-table" id="sp-projects-table">
+                            <thead>
+                                <tr>
+                                    <th>Sujet</th>
+                                    <th>Étudiant(e)</th>
+                                    <th>Date début</th>
+                                    <th>Progression</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ui:repeat value="#{projetEncadrantBean.projets}" var="projet">
+                                    <tr data-sujet="#{projet.sujet}"
+                                        data-etudiant="#{projet.etudiant.nomComplet}"
+                                        data-statut="#{projet.statut.libelle}">
 
-                        <h:column>
-                            <f:facet name="header">Sujet</f:facet>
-                            #{projet.sujet}
-                        </h:column>
+                                        <td class="sp-col-sujet">#{projet.sujet}</td>
 
-                        <h:column>
-                            <f:facet name="header">Étudiant(e)</f:facet>
-                            #{projet.etudiant.nomComplet}
-                        </h:column>
+                                        <td class="sp-col-etudiant">
+                                            &#x1F464; #{projet.etudiant.nomComplet}
+                                        </td>
 
-                        <h:column>
-                            <f:facet name="header">Date début</f:facet>
-                            #{projetEncadrantBean.formatDate(projet.dateDebut)}
-                        </h:column>
+                                        <td class="sp-col-date">
+                                            &#x1F4C5; #{projetEncadrantBean.formatDate(projet.dateDebut)}
+                                        </td>
 
-                        <h:column>
-                            <f:facet name="header">Statut</f:facet>
-                            <span class="badge #{projetEncadrantBean.getStatutProjetClass(projet.statut)}">
-                                #{projet.statut.libelle}
-                            </span>
-                        </h:column>
+                                        <!-- Progress: width via composed CSS class, no inline EL style -->
+                                        <td>
+                                            <div class="sp-progress-wrap">
+                                                <div class="sp-progress-bar">
+                                                    <div class="sp-progress-fill
+                                                                sp-progress-fill--#{projetEncadrantBean.getStatutProjetClass(projet.statut)}
+                                                                sp-progress-fill--#{projetEncadrantBean.getStatutProjetClass(projet.statut)}">
+                                                    </div>
+                                                </div>
+                                                <span class="sp-progress-pct">
+                                                    <h:panelGroup rendered="#{projet.statut.name() == 'EN_COURS'}">45%</h:panelGroup>
+                                                    <h:panelGroup rendered="#{projet.statut.name() == 'VALIDE'}">80%</h:panelGroup>
+                                                    <h:panelGroup rendered="#{projet.statut.name() == 'TERMINE'}">100%</h:panelGroup>
+                                                </span>
+                                            </div>
+                                        </td>
 
-                        <h:column>
-                            <f:facet name="header">Actions</f:facet>
-                            <div class="btn-group">
-                                <h:commandButton value="Voir"
-                                                 action="#{projetEncadrantBean.selectionnerProjet(projet)}"
-                                                 styleClass="btn btn-primary btn-sm">
-                                    <f:ajax execute="@this" render=":listeProjetsForm :detailsProjetPanel"/>
-                                </h:commandButton>
-                            </div>
-                        </h:column>
-                    </h:dataTable>
+                                        <td>
+                                            <span class="sp-badge sp-badge-#{projetEncadrantBean.getStatutProjetClass(projet.statut)}">
+                                                #{projet.statut.libelle}
+                                            </span>
+                                        </td>
 
-                    <h:panelGroup rendered="#{empty projetEncadrantBean.projets}">
-                        <div class="empty-state">
-                            Aucun projet encadré pour le moment.
+                                        <td>
+                                            <h:commandButton value="&#x1F50D; Détails"
+                                                             action="#{projetEncadrantBean.selectionnerProjet(projet)}"
+                                                             styleClass="sp-btn sp-btn-primary">
+                                                <f:ajax execute="@this" render=":listeProjetsForm :detailsProjetPanel"/>
+                                            </h:commandButton>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </tbody>
+                        </table>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{empty projetEncadrantBean.projets}" layout="block">
+                        <div class="sp-empty">
+                            <span class="sp-empty__icon">&#x1F4ED;</span>
+                            <h3 class="sp-empty__title">Aucun projet encadré</h3>
+                            <p class="sp-empty__sub">Vous n'avez pas encore de projets d'étudiants à suivre.</p>
                         </div>
                     </h:panelGroup>
                 </h:form>
             </div>
+
         </h:panelGroup>
 
+        <!-- ══════════════════════════════════════
+             DETAIL VIEW
+        ══════════════════════════════════════ -->
         <h:panelGroup id="detailsProjetPanel" layout="block">
-            <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet != null}">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <span class="card-title-icon">🔍</span>
-                            Détails du projet
-                        </h2>
+            <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet != null}" layout="block">
+
+                <!-- ── Detail card ───────────────── -->
+                <div class="sp-card">
+                    <div class="sp-card__head">
+                        <span class="sp-card__icon">&#x1F50D;</span>
+                        <h2 class="sp-card__title">Détails du projet</h2>
+                        <span class="sp-badge sp-badge-#{projetEncadrantBean.getStatutProjetClass(projetEncadrantBean.selectedProjet.statut)}"
+                              style="margin-left:auto;">
+                            #{projetEncadrantBean.selectedProjet.statut.libelle}
+                        </span>
                     </div>
 
-                    <div class="section-grid">
+                    <div class="sp-detail-grid">
+
+                        <!-- Left column -->
                         <div>
-                            <div class="info-item">
-                                <span class="info-label">Sujet</span>
-                                <span class="info-value">#{projetEncadrantBean.selectedProjet.sujet}</span>
+                            <!-- Student info -->
+                            <p class="sp-section-title">&#x1F464; Informations Étudiant</p>
+                            <div class="sp-info-grid">
+                                <div class="sp-info-item">
+                                    <span class="sp-info-label">Nom complet</span>
+                                    <span class="sp-info-value">
+                                        #{projetEncadrantBean.selectedProjet.etudiant.nomComplet}
+                                    </span>
+                                </div>
+                                <div class="sp-info-item">
+                                    <span class="sp-info-label">Email</span>
+                                    <span class="sp-info-value sp-email">
+                                        #{projetEncadrantBean.selectedProjet.etudiant.email}
+                                    </span>
+                                </div>
                             </div>
-                            <div class="info-item">
-                                <span class="info-label">Étudiant(e)</span>
-                                <span class="info-value">#{projetEncadrantBean.selectedProjet.etudiant.nomComplet}</span>
+
+                            <!-- Project details -->
+                            <p class="sp-section-title">&#x1F4C1; Détails du Projet</p>
+                            <div class="sp-info-grid">
+                                <div class="sp-info-item sp-info-item--full">
+                                    <span class="sp-info-label">Sujet</span>
+                                    <span class="sp-info-value">
+                                        #{projetEncadrantBean.selectedProjet.sujet}
+                                    </span>
+                                </div>
+                                <div class="sp-info-item">
+                                    <span class="sp-info-label">Date de début</span>
+                                    <span class="sp-info-value">
+                                        #{projetEncadrantBean.formatDate(projetEncadrantBean.selectedProjet.dateDebut)}
+                                    </span>
+                                </div>
+                                <div class="sp-info-item">
+                                    <span class="sp-info-label">Date de fin prévue</span>
+                                    <span class="sp-info-value">
+                                        <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.dateFin != null}">
+                                            #{projetEncadrantBean.formatDate(projetEncadrantBean.selectedProjet.dateFin)}
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.dateFin == null}">
+                                            <span class="sp-text-muted">—</span>
+                                        </h:panelGroup>
+                                    </span>
+                                </div>
                             </div>
-                            <div class="info-item">
-                                <span class="info-label">Date de début</span>
-                                <span class="info-value">#{projetEncadrantBean.formatDate(projetEncadrantBean.selectedProjet.dateDebut)}</span>
+
+                            <!-- Description -->
+                            <p class="sp-section-title">&#x1F4DD; Description</p>
+                            <div class="sp-desc-box">
+                                <h:panelGroup rendered="#{not empty projetEncadrantBean.selectedProjet.description}">
+                                    #{projetEncadrantBean.selectedProjet.description}
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{empty projetEncadrantBean.selectedProjet.description}">
+                                    <span class="sp-text-muted">Aucune description fournie.</span>
+                                </h:panelGroup>
+                            </div>
+
+                            <!-- Avancement -->
+                            <p class="sp-section-title">&#x1F4CA; Avancement</p>
+                            <div class="sp-avancement-wrap">
+                                <div class="sp-progress-bar sp-progress-bar--lg">
+                                    <!-- Width comes from CSS class, zero EL in style -->
+                                    <div class="sp-progress-fill
+                                                sp-progress-fill--#{projetEncadrantBean.getStatutProjetClass(projetEncadrantBean.selectedProjet.statut)}
+                                                sp-progress-fill--#{projetEncadrantBean.getStatutProjetClass(projetEncadrantBean.selectedProjet.statut)}">
+                                    </div>
+                                </div>
+                                <span class="sp-progress-pct sp-progress-pct--lg">
+                                    <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() == 'EN_COURS'}">45%</h:panelGroup>
+                                    <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() == 'VALIDE'}">80%</h:panelGroup>
+                                    <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() == 'TERMINE'}">100%</h:panelGroup>
+                                </span>
+                            </div>
+
+                            <!-- Legend -->
+                            <div class="sp-progress-legend">
+                                <span class="sp-legend-item">
+                                    <span class="sp-legend-dot sp-legend-dot--en-cours"></span>En cours — 45%
+                                </span>
+                                <span class="sp-legend-item">
+                                    <span class="sp-legend-dot sp-legend-dot--valide"></span>Validé — 80%
+                                </span>
+                                <span class="sp-legend-item">
+                                    <span class="sp-legend-dot sp-legend-dot--termine"></span>Terminé — 100%
+                                </span>
                             </div>
                         </div>
 
-                        <div class="encadrant-box">
-                            <div class="encadrant-header">
-                                <span class="card-title-icon">📌</span>
-                                <h3 class="encadrant-title">Statut actuel</h3>
+                        <!-- Right column: status panel -->
+                        <div class="sp-status-panel">
+
+                            <!-- Current status display -->
+                            <div class="sp-status-current">
+                                <span class="sp-status-icon">
+                                    <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() == 'EN_COURS'}">&#x2699;&#xFE0F;</h:panelGroup>
+                                    <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() == 'VALIDE'}">&#x2705;</h:panelGroup>
+                                    <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() == 'TERMINE'}">&#x1F3C1;</h:panelGroup>
+                                </span>
+                                <span class="sp-badge sp-badge-#{projetEncadrantBean.getStatutProjetClass(projetEncadrantBean.selectedProjet.statut)} sp-badge--lg">
+                                    #{projetEncadrantBean.selectedProjet.statut.libelle}
+                                </span>
+                                <span class="sp-text-muted sp-text-muted--sm">Statut actuel</span>
                             </div>
-                            <div class="status-bar" style="margin-top:10px; font-weight:bold; color:#1e3a8a;">
-                                #{projetEncadrantBean.selectedProjet.statut.libelle}
+
+                            <!-- Change status form -->
+                            <h:form id="statutForm">
+                                <div class="sp-status-change">
+                                    <p class="sp-section-title">&#x270F;&#xFE0F; Changer le statut</p>
+                                    <h:selectOneMenu value="#{projetEncadrantBean.nouveauStatut}"
+                                                     styleClass="sp-select">
+                                        <f:selectItems value="#{projetEncadrantBean.allStatuts}"
+                                                       var="statut"
+                                                       itemValue="#{statut}"
+                                                       itemLabel="#{statut.libelle}"/>
+                                    </h:selectOneMenu>
+                                    <h:commandButton value="&#x1F4BE; Mettre à jour"
+                                                     action="#{projetEncadrantBean.changerStatut}"
+                                                     styleClass="sp-btn sp-btn-success sp-btn--full">
+                                        <f:ajax execute="@form" render=":detailsProjetPanel"/>
+                                    </h:commandButton>
+                                </div>
+                            </h:form>
+
+                            <!-- Milestones — all done via rendered=, no EL in style -->
+                            <div>
+                                <p class="sp-section-title">&#x1F5D3;&#xFE0F; Jalons</p>
+                                <div class="sp-milestones">
+                                    <!-- Jalon 1: always done once project exists -->
+                                    <div class="sp-milestone-row">
+                                        <span class="sp-milestone-dot sp-milestone-dot--done">&#x2713;</span>
+                                        <span class="sp-milestone-label">Démarrage du projet</span>
+                                    </div>
+                                    <!-- Jalon 2: done if VALIDE or TERMINE -->
+                                    <div class="sp-milestone-row">
+                                        <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() == 'VALIDE' or projetEncadrantBean.selectedProjet.statut.name() == 'TERMINE'}">
+                                            <span class="sp-milestone-dot sp-milestone-dot--done">&#x2713;</span>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() == 'EN_COURS'}">
+                                            <span class="sp-milestone-dot sp-milestone-dot--pending">&#x2022;</span>
+                                        </h:panelGroup>
+                                        <span class="sp-milestone-label">Rapport validé</span>
+                                    </div>
+                                    <!-- Jalon 3: done only if TERMINE -->
+                                    <div class="sp-milestone-row">
+                                        <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() == 'TERMINE'}">
+                                            <span class="sp-milestone-dot sp-milestone-dot--done">&#x2713;</span>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{projetEncadrantBean.selectedProjet.statut.name() != 'TERMINE'}">
+                                            <span class="sp-milestone-dot sp-milestone-dot--pending">&#x2022;</span>
+                                        </h:panelGroup>
+                                        <span class="sp-milestone-label">Soutenance terminée</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card" style="margin-top:20px; background:#f8fafc;">
-                        <h:form id="statutForm">
-                            <div class="form-group">
-                                <label class="form-label">Changer le statut :</label>
-                                <h:selectOneMenu value="#{projetEncadrantBean.nouveauStatut}" styleClass="form-control">
-                                    <f:selectItems value="#{projetEncadrantBean.allStatuts}"
-                                                   var="statut"
-                                                   itemValue="#{statut}"
-                                                   itemLabel="#{statut.libelle}" />
-                                </h:selectOneMenu>
-                            </div>
-                            <h:commandButton value="Mettre à jour"
-                                             action="#{projetEncadrantBean.changerStatut}"
-                                             styleClass="btn btn-primary">
-                                <f:ajax execute="@form" render=":detailsProjetPanel"/>
-                            </h:commandButton>
-                        </h:form>
-                    </div>
-
-                    <div class="card" style="margin-top:20px;">
-                        <h:form id="commentaireForm">
-                            <div class="form-group">
-                                <label class="form-label">Ajouter un commentaire :</label>
-                                <h:inputTextarea value="#{projetEncadrantBean.nouveauCommentaire}"
-                                                 styleClass="form-control" rows="3"/>
-                            </div>
-                            <h:commandButton value="Envoyer"
-                                             action="#{projetEncadrantBean.ajouterCommentaire}"
-                                             styleClass="btn btn-secondary">
-                                <f:ajax execute="@form" render=":detailsProjetPanel"/>
-                            </h:commandButton>
-                        </h:form>
-                    </div>
-
-                    <div style="margin-top:20px;">
+                    <!-- Action bar -->
+                    <div class="sp-action-bar">
                         <h:form id="retourForm">
-                            <h:commandButton value="← Retour à la liste"
+                            <h:commandButton value="&#x2190; Retour à la liste"
                                              action="#{projetEncadrantBean.retourListe}"
-                                             styleClass="btn btn-outline">
+                                             styleClass="sp-btn sp-btn-outline">
                                 <f:ajax execute="@this" render=":content-area"/>
                             </h:commandButton>
                         </h:form>
                     </div>
                 </div>
+
+                <!-- ── Comments card ──────────────── -->
+                <div class="sp-card">
+                    <div class="sp-card__head">
+                        <span class="sp-card__icon">&#x1F4AC;</span>
+                        <h2 class="sp-card__title">Commentaires &amp; Suivi</h2>
+                        <span class="sp-comment-count">
+                            #{not empty projetEncadrantBean.commentaires ? projetEncadrantBean.commentaires.size() : 0} commentaire(s)
+                        </span>
+                    </div>
+
+                    <div class="sp-comments-wrap">
+                        <h:panelGroup rendered="#{not empty projetEncadrantBean.commentaires}" layout="block">
+                            <ui:repeat value="#{projetEncadrantBean.commentaires}" var="commentaire">
+                                <div class="sp-comment-item">
+                                    <div class="sp-comment-avatar">
+                                        #{not empty commentaire.auteur.nomComplet ? commentaire.auteur.nomComplet.substring(0,1) : '?'}
+                                    </div>
+                                    <div class="sp-comment-body">
+                                        <div class="sp-comment-meta">
+                                            <strong>#{commentaire.auteur.nomComplet}</strong>
+                                            &#xB7; #{projetEncadrantBean.formatDate(commentaire.dateCreation)}
+                                        </div>
+                                        <div class="sp-comment-text">#{commentaire.contenu}</div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{empty projetEncadrantBean.commentaires}" layout="block">
+                            <div class="sp-empty sp-empty--compact">
+                                <span class="sp-empty__icon">&#x1F4AC;</span>
+                                <h3 class="sp-empty__title">Aucun commentaire</h3>
+                                <p class="sp-empty__sub">Ajoutez votre premier retour ci-dessous.</p>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+
+                    <!-- Add comment -->
+                    <div class="sp-add-comment">
+                        <p class="sp-section-title">&#x270F;&#xFE0F; Ajouter un commentaire / retour</p>
+                        <h:form id="commentaireForm">
+                            <h:inputTextarea value="#{projetEncadrantBean.nouveauCommentaire}"
+                                             styleClass="sp-textarea"
+                                             placeholder="Ex : Très bon avancement, pensez à finaliser la bibliographie…"/>
+                            <h:commandButton value="&#x1F4E4; Envoyer le commentaire"
+                                             action="#{projetEncadrantBean.ajouterCommentaire}"
+                                             styleClass="sp-btn sp-btn-primary">
+                                <f:ajax execute="@form" render=":detailsProjetPanel"/>
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+                </div>
+
             </h:panelGroup>
         </h:panelGroup>
+
+        <!-- External JS resource (avoids CDATA/lint issues in XHTML) -->
+        <h:outputScript library="js" name="suivi-projet.js" target="body"/>
+
     </ui:define>
 
 </ui:composition>

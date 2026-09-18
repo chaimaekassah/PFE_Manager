@@ -1,0 +1,168 @@
+/* ── Admin User Management (admin-utilisateurs.css) ── */
+
+.au-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.au-stat-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid #f1f5f9;
+    transition: transform 0.3s ease;
+}
+.au-stat-card:hover { transform: translateY(-4px); }
+
+.au-stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+.au-stat-icon--primary { background: #eff6ff; color: #2563eb; }
+.au-stat-icon--success { background: #f0fdf4; color: #16a34a; }
+
+.au-stat-info { display: flex; flex-direction: column; }
+.au-stat-value { font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1; }
+.au-stat-label { font-size: 13px; font-weight: 600; color: #64748b; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Toolbar */
+.au-toolbar {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    border: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.au-search-group {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    min-width: 300px;
+}
+.au-input {
+    flex: 1;
+    padding: 12px 18px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+}
+.au-input:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+
+/* Buttons */
+.au-btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.au-btn:active { transform: scale(0.97); }
+
+.au-btn--primary { background: #2563eb; color: #ffffff; }
+.au-btn--primary:hover { background: #1d4ed8; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+
+.au-btn--success { background: #16a34a; color: #ffffff; }
+.au-btn--success:hover { background: #15803d; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); }
+
+.au-btn--ghost { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+.au-btn--ghost:hover { background: #f1f5f9; color: #0f172a; }
+
+/* Table Section */
+.au-table-card {
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.04);
+    border: 1px solid #f1f5f9;
+}
+.au-table-header {
+    padding: 24px 32px;
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+}
+.au-table-title { font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 12px; }
+
+.au-table { width: 100%; border-collapse: collapse; }
+.au-table th {
+    background: #f8fafc;
+    padding: 16px 32px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f1f5f9;
+}
+.au-table td { padding: 20px 32px; font-size: 14px; color: #334155; border-bottom: 1px solid #f8fafc; vertical-align: middle; }
+.au-table tr:last-child td { border-bottom: none; }
+.au-table tr:hover td { background: #fcfdfe; }
+
+/* Badges */
+.au-badge {
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.au-badge--admin, .role-admin { background: #fef3c7; color: #92400e; }
+.au-badge--encadrant, .role-encadrant { background: #f3e8ff; color: #6b21a8; }
+.au-badge--etudiant, .role-etudiant { background: #dcfce7; color: #166534; }
+
+.au-badge--actif, .statut-actif { background: #dcfce7; color: #166534; }
+.au-badge--suspendu, .statut-inactif { background: #fee2e2; color: #991b1b; }
+.statut-supprime { background: #f1f5f9; color: #64748b; text-decoration: line-through; }
+
+/* Action Buttons Group */
+.au-action-group { display: flex; gap: 8px; }
+.au-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 16px;
+    text-decoration: none;
+    color: inherit;
+}
+.au-icon-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+.au-icon-btn--primary:hover { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
+.au-icon-btn--danger:hover { border-color: #ef4444; color: #ef4444; background: #fef2f2; }
+.au-icon-btn--warning:hover { border-color: #f59e0b; color: #f59e0b; background: #fffbeb; }
+
+/* Empty State */
+.au-empty { text-align: center; padding: 60px 40px; color: #94a3b8; }
+.au-empty-icon { font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5; }

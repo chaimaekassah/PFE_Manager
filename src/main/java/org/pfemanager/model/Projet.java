@@ -29,11 +29,15 @@ public class Projet implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "etudiant_id")
-    private User etudiant;
+    private Utilisateur etudiant;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "encadrant_id")
-    private User encadrant;
+    private Utilisateur encadrant;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "auteur_id")
+    private Utilisateur auteur;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -58,7 +62,7 @@ public class Projet implements Serializable {
         this.documents = new ArrayList<>();
     }
 
-    public Projet(Long id, String sujet, String description, User etudiant, User encadrant) {
+    public Projet(Long id, String sujet, String description, Utilisateur etudiant, Utilisateur encadrant) {
         this();
         this.id = id;
         this.sujet = sujet;
@@ -107,21 +111,10 @@ public class Projet implements Serializable {
         this.description = description;
     }
 
-    public User getEtudiant() {
-        return etudiant;
-    }
-
-    public void setEtudiant(User etudiant) {
-        this.etudiant = etudiant;
-    }
-
-    public User getEncadrant() {
-        return encadrant;
-    }
-
-    public void setEncadrant(User encadrant) {
-        this.encadrant = encadrant;
-    }
+    public Utilisateur getEtudiant() { return etudiant; }
+    public void setEtudiant(Utilisateur e) { this.etudiant = e; }
+    public Utilisateur getEncadrant() { return encadrant; }
+    public void setEncadrant(Utilisateur e) { this.encadrant = e; }
 
     public StatutProjet getStatut() {
         return statut;
@@ -187,4 +180,6 @@ public class Projet implements Serializable {
                 ", statut=" + statut +
                 '}';
     }
+    public Utilisateur getAuteur() { return auteur; }
+    public void setAuteur(Utilisateur auteur) { this.auteur = auteur; }
 }

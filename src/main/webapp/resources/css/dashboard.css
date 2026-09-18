@@ -450,3 +450,19 @@ body {
     .form-row { grid-template-columns: 1fr; }
     .info-grid { grid-template-columns: 1fr; }
 }
+/* ══════════════════════════════════════════════
+   PAGE WRAPPER — utilisé par layout.xhtml
+══════════════════════════════════════════════ */
+.page-wrapper {
+    margin-left: 260px;
+    padding: 32px;
+    min-height: 100vh;
+    background: #f1f5f9;
+}
+
+@media (max-width: 900px) {
+    .page-wrapper {
+        margin-left: 70px;
+        padding: 20px;
+    }
+}

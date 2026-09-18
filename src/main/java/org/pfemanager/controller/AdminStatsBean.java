@@ -31,7 +31,8 @@ public class AdminStatsBean {
 
         // Sujets complets = affectés
         totalAffectations = em.createQuery(
-                        "SELECT COUNT(s) FROM Sujet s WHERE s.statut = 'COMPLET'", Long.class)
+                        "SELECT COUNT(s) FROM Sujet s WHERE s.statut = :st", Long.class)
+                .setParameter("st", org.pfemanager.model.Sujet.StatutSujet.COMPLET)
                 .getSingleResult();
     }
 

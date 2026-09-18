@@ -1,4 +1,5 @@
 package org.pfemanager.model;
+
 import jakarta.persistence.*;
 import java.io.Serializable;
 
@@ -25,8 +26,13 @@ public class Utilisateur implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
     @Column(name = "photo")
     private String photo;
+
+    // Champ manquant qui causait l'erreur NOT NULL
+    @Column(name = "statut", nullable = false)
+    private String statut = "ACTIF";
 
     public String getPhoto() { return photo; }
     public void setPhoto(String photo) { this.photo = photo; }
@@ -37,6 +43,7 @@ public class Utilisateur implements Serializable {
                 ? photo
                 : "resources/images/default-avatar.png";
     }
+
     // Constructeurs
     public Utilisateur() {}
 
@@ -45,6 +52,7 @@ public class Utilisateur implements Serializable {
         this.email = email;
         this.motDePasse = motDePasse;
         this.role = role;
+        this.statut = "ACTIF";
     }
 
     // Getters et Setters (Indispensables pour JSF et Hibernate)
@@ -62,4 +70,11 @@ public class Utilisateur implements Serializable {
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
+
+    public String getNomComplet() {
+        return nom != null ? nom : email;
+    }
 }
